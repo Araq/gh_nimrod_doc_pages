@@ -62,6 +62,7 @@ proc process_commandline() =
   PARAMS.add(new_parameter_specification(names = param_boot,
     help_text = help_boot))
 
+  # Parsing.
   G.params = PARAMS.parse
 
   proc abort(message: string) =
@@ -80,6 +81,11 @@ proc process_commandline() =
     G.config_path = G.params.options[param_config[0]].str_val
   else:
     G.config_path = ""
+
+  # Input validation.
+  if not G.git_exe.exists_file:
+    quit "This program relies on the git executable being available, but it " &
+      "could not be found on your $PATH!"
 
   if G.boot and G.config_path.len > 0:
     abort "Sorry, can't use both --boot and --config switches."
