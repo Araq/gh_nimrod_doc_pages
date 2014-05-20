@@ -1,14 +1,18 @@
-import argument_parser, os, tables, strutils
+import argument_parser, os, tables, strutils, osproc
 
 type
   Global = object ## \
     ## Holds all the global variables of the process.
     params: Tcommandline_results
     config_path: string ## Empty string or user input path to the config file.
+    config_dir: string ## dot or user input path to the config file.
     boot: bool ## True if the user wants to create files in the current dir.
     git_exe: string ## \
     ## Full path to the git executable or the empty string. This is initialized
     ## in process_commandline.
+    git_branch: string ## Contains the name of the current branch.
+    github_username: string ## Empty string or username.
+    github_project: string ## Empty string or GitHub project name.
 
 
 var G: Global
@@ -35,6 +39,7 @@ const
   ## Maintenance version changes mean bugfixes or non commandline changes.
 
   config_filename = "gh_nimrod_doc_pages.ini"
+  gh_pages = "gh-pages"
 
   param_help = @["-h", "--help"]
   help_help = "Displays commandline help and exits."
@@ -64,6 +69,28 @@ const
     slurp_html_template("stylesheets/pygment_trac.css"),
     slurp_html_template("stylesheets/stylesheet.css"),
     ]
+
+
+proc run_git(params: string): seq[string] =
+  ## Runs the specified git commandline.
+  ##
+  ## Returns the output as text lines. Always returns a valid sequence, but if
+  ## there are any problems the sequence will have a single element with the
+  ## empty string.
+  let (output, exit) = execCmdEx(G.git_exe & " " & params)
+  if exit != 0:
+    result = @[""]
+  else:
+    result = output.split_lines
+
+
+proc gather_git_info() =
+  ## Obtains juicy bits about the git project we are on.
+  ##
+  ## Fills the git_branch, github_project and github_username, or leaves them
+  ## as the empty string.
+  G.git_branch = run_git("rev-parse --abbrev-ref HEAD")[0]
+  echo G.git_branch
 
 
 proc process_commandline() =
@@ -113,6 +140,16 @@ proc process_commandline() =
   if G.config_path.len > 0 and not G.config_path.exists_file:
     abort "Sorry, '" & G.config_path & "' doesn't seem to be a valid file."
 
+  if G.config_path.len > 0:
+    G.config_dir = G.config_path.parent_dir
+  else:
+    G.config_dir = "."
+
+  gather_git_info()
+
+  if G.git_branch != gh_pages:
+    abort "You have to run the command on your " & gh_pages & " branch."
+
 
 proc generate_templates() =
   ## Generates missing files for the user.
@@ -135,6 +172,7 @@ proc main() =
   ## Processes the parameters, reads config files and if everything is ok, does
   ## some work.
   process_commandline()
+  gather_git_info()
   if G.boot:
     generate_templates()
   echo "Hey!", G.config_path, G.boot
