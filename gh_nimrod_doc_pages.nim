@@ -13,6 +13,12 @@ type
 
 var G: Global
 
+
+template slurp_html_template(rel_path: string): expr =
+  ## Template used to reduce typing for slurping files.
+  (rel_path, slurp("boot_html_template" / rel_path))
+
+
 const
   version_str* = "0.1.1" ## Program version as a string.
   version_int* = (major: 0, minor: 1, maintenance: 1) ## \
@@ -28,7 +34,7 @@ const
   ##
   ## Maintenance version changes mean bugfixes or non commandline changes.
 
-  config_filename = "gh-nimrod-doc-pages.ini"
+  config_filename = "gh_nimrod_doc_pages.ini"
 
   param_help = @["-h", "--help"]
   help_help = "Displays commandline help and exits."
@@ -46,7 +52,18 @@ const
     "working directory, which should be inside a git tree with a branch " &
     "named gh-pages. You can't use this switch together with --config."
 
-  template_files = @[(config_filename, "stuff")]
+  template_files = @[(config_filename, "stuff"),
+    slurp_html_template("images/body-bg.png"),
+    slurp_html_template("images/highlight-bg.jpg"),
+    slurp_html_template("images/hr.png"),
+    slurp_html_template("images/octocat-icon.png"),
+    slurp_html_template("images/tar-gz-icon.png"),
+    slurp_html_template("images/zip-icon.png"),
+    slurp_html_template("index.html"),
+    slurp_html_template("stylesheets/print.css"),
+    slurp_html_template("stylesheets/pygment_trac.css"),
+    slurp_html_template("stylesheets/stylesheet.css"),
+    ]
 
 
 proc process_commandline() =
@@ -106,6 +123,9 @@ proc generate_templates() =
       echo "File '" & filename & "' already exists, skipping."
       continue
     echo "Generating missing '" & filename & "'"
+    # Make sure the directory exists.
+    let dir = filename.parent_dir
+    if dir.len > 0: dir.create_dir
     filename.write_file(contents)
 
 
