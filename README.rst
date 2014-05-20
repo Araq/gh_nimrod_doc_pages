@@ -1,5 +1,5 @@
 ===================
-gh-nimrod-doc-pages
+gh_nimrod_doc_pages
 ===================
 
 This project has not release yet anything useful. In the future it could help
