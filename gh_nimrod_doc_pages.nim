@@ -43,7 +43,10 @@ const
 
   param_boot = @["-b", "--boot"]
   help_boot = "Creates missing files required for operation in the " &
-    "working directory. You can't use this switch together with --config."
+    "working directory, which should be inside a git tree with a branch " &
+    "named gh-pages. You can't use this switch together with --config."
+
+  template_files = @[(config_filename, "stuff")]
 
 
 proc process_commandline() =
@@ -94,12 +97,26 @@ proc process_commandline() =
     abort "Sorry, '" & G.config_path & "' doesn't seem to be a valid file."
 
 
+proc generate_templates() =
+  ## Generates missing files for the user.
+  ##
+  ## If any of the files already exists it won't be overwritten.
+  for filename, contents in template_files.items:
+    if filename.exists_file:
+      echo "File '" & filename & "' already exists, skipping."
+      continue
+    echo "Generating missing '" & filename & "'"
+    filename.write_file(contents)
+
+
 proc main() =
   ## Main entry point of the program.
   ##
   ## Processes the parameters, reads config files and if everything is ok, does
   ## some work.
   process_commandline()
+  if G.boot:
+    generate_templates()
   echo "Hey!", G.config_path, G.boot
 
 
