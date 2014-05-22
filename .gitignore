@@ -7,4 +7,5 @@ nimcache/
 # Full paths.
 /README.html
 /gh_nimrod_doc_pages
+/inidata
 /nakefile
