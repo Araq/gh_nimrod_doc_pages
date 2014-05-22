@@ -40,6 +40,11 @@ const
 
   config_filename = "gh_nimrod_doc_pages.ini"
   gh_pages = "gh-pages"
+  git_ssh_prefix = "git@github.com:" ## Used to detect origin information.
+  git_https_prefix = "https://github.com/" ## Detects origin url.
+  git_suffix = ".git" ## Mandatory at end of origin url.
+  template_github_username = "github_username"
+  template_github_project = "github_project"
 
   param_help = @["-h", "--help"]
   help_help = "Displays commandline help and exits."
@@ -90,7 +95,33 @@ proc gather_git_info() =
   ## Fills the git_branch, github_project and github_username, or leaves them
   ## as the empty string.
   G.git_branch = run_git("rev-parse --abbrev-ref HEAD")[0]
-  echo G.git_branch
+  G.github_username = ""
+  G.github_project = ""
+  # Try to find out origin remote with full GitHub username/project name
+  for line in run_git("remote -v"):
+    if not line.starts_with("origin") or line.find("(push)") < 0:
+      continue
+    # Found line, try to parse info.
+    for prefix in [git_ssh_prefix, git_https_prefix]:
+      var pos = line.find(git_ssh_prefix)
+      if pos > 0: # Found the beginning of the pattern.
+        pos += git_ssh_prefix.len
+        let split = line.find('/', pos)
+        if split > 0: # Found the username/project separator.
+          let finish = line.find(git_suffix, split)
+          if finish > 0: # Found the trailing project extension.
+            G.github_username = line[pos .. <split]
+            G.github_project = line[split + 1 .. <finish]
+            break
+
+  if G.github_username.len < 1:
+    echo "Warning, couldn't extract github username from local repo."
+    G.github_username = template_github_username
+
+  if G.github_project.len < 1:
+    echo "Warning, couldn't extract github project name from local repo."
+    G.github_project = template_github_project
+
 
 
 proc process_commandline() =
@@ -147,14 +178,15 @@ proc process_commandline() =
 
   gather_git_info()
 
-  if G.git_branch != gh_pages:
+  if not "USER_GRADHA".exists_env and G.git_branch != gh_pages:
     abort "You have to run the command on your " & gh_pages & " branch."
 
 
 proc generate_templates() =
   ## Generates missing files for the user.
   ##
-  ## If any of the files already exists it won't be overwritten.
+  ## If any of the files already exists it won't be overwritten. This proc
+  ## presumes it will always run with relative paths to the working directory.
   for filename, contents in template_files.items:
     if filename.exists_file:
       echo "File '" & filename & "' already exists, skipping."
@@ -163,7 +195,10 @@ proc generate_templates() =
     # Make sure the directory exists.
     let dir = filename.parent_dir
     if dir.len > 0: dir.create_dir
-    filename.write_file(contents)
+    let data = (if filename != "index.html": contents else: contents
+      .replace(template_github_username, G.github_username)
+      .replace(template_github_project, G.github_project))
+    filename.write_file(data)
 
 
 proc main() =
@@ -172,10 +207,8 @@ proc main() =
   ## Processes the parameters, reads config files and if everything is ok, does
   ## some work.
   process_commandline()
-  gather_git_info()
   if G.boot:
     generate_templates()
-  echo "Hey!", G.config_path, G.boot
 
 
 when isMainModule: main()
