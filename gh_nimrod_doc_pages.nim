@@ -62,7 +62,8 @@ const
     "working directory, which should be inside a git tree with a branch " &
     "named gh-pages. You can't use this switch together with --config."
 
-  template_files = @[(config_filename, "stuff"),
+  template_files = @[
+    slurp_html_template(config_filename),
     slurp_html_template("images/body-bg.png"),
     slurp_html_template("images/highlight-bg.jpg"),
     slurp_html_template("images/hr.png"),
