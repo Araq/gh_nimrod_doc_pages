@@ -16,6 +16,7 @@ type
     default*: Section ## Content of the default gh-pages section.
     specific*: TTable[string, Section] ## All other possible sections.
 
+
 proc init(X: var Section) =
   ## Initializes a Section with default values.
   X.name = ""
@@ -24,17 +25,49 @@ proc init(X: var Section) =
   X.branches = @[]
   X.doc_modules = @[]
 
+
 proc init_section(): Section =
   ## Shortcut wrapper around init(Section).
   result.init
+
 
 proc init(X: var Ini_config) =
   ## Initializes a Ini_config with default values.
   X.default.init
   X.specific = init_table[string, Section]()
 
+
 proc init_ini_config(): Ini_config =
   ## Shortcut wrapper around init(Ini_config).
+  result.init
+
+
+proc load_ini(filename: string): Ini_config =
+  ## Loads the specified configuration file.
+  ##
+  ## Returns the Ini_config structure or raises an IOE hexception.
+  var f = filename.newFileStream(fmRead)
+  if f.isNil:
+    raise new_exception(EIO, "Could not open " & filename)
+
+  finally: f.close
+
+  var p: TCfgParser
+  p.open(f, filename)
+  finally: p.close
+
+  var section = ""
+  while true:
+    var e = next(p)
+    case e.kind
+    of cfgEof: break
+    of cfgSectionStart: section = e.section
+    of cfgKeyValuePair:
+      echo("key-value-pair: " & e.key & ": " & e.value)
+    of cfgOption: discard
+    of cfgError: raise new_exception(EInvalidValue,
+      "Error parsing " & filename & ": " & e.msg)
+
 
 proc test() =
   ## Mini unit test proc.
@@ -42,6 +75,8 @@ proc test() =
     ini = init_ini_config()
     temp_section: Section
   temp_section.init
+  ini = load_ini("gh_nimrod_doc_pages.ini")
   echo "Hey!"
+
 
 when isMainModule: test()
