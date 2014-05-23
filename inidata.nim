@@ -58,10 +58,22 @@ proc load_ini(filename: string): Ini_config =
 
   var section = ""
   while true:
-    var e = next(p)
+    var e: TCfgEvent
+    try: e = next(p)
+    except EInvalidField:
+      quit(p.errorStr("""Internal error parsing file.
+
+Please look up the ini file at the specified position and see if you are naming
+a section with non alphabetic characters. If so, try quoting the section (eg:
+["a-section"]). If you still can't get this working, please report the bug at
+https://github.com/gradha/gh_nimrod_doc_pages/issues providing the contents of
+the .ini file.
+"""))
     case e.kind
     of cfgEof: break
-    of cfgSectionStart: section = e.section
+    of cfgSectionStart:
+      section = e.section
+      echo "section ", section
     of cfgKeyValuePair:
       echo("key-value-pair: " & e.key & ": " & e.value)
     of cfgOption: discard
