@@ -2,13 +2,13 @@ import parsecfg, strutils, streams, tables
 
 type
   Section* = object ## Contains the parameters for a section in the .ini file.
-    name*: string not nil ## Name of the section.
-    update_html*: string not nil ## Html file to update.
-    doc_dir*: string not nil ## Base directory where docs will be placed.
+    name*: string ## Not nil. Name of the section.
+    update_html*: string ## Not nil. Html file to update.
+    doc_dir*: string ## Not nil. Base directory where docs will be placed.
     ignore_tags*: seq[string] ## Nil or contains the tags to ignore.
-    branches*: seq[string] not nil ## ## Branches to regenerate.
+    branches*: seq[string] ## Not nil. Branches to regenerate.
     doc2_modules*: seq[string] ## Nil or files to run through doc2 command.
-    doc_modules*: seq[string] not nil ## Files to run through doc command.
+    doc_modules*: seq[string] ## Not nil. Files to run through doc command.
     rst_files*: seq[string] ## Nil or files to be rested.
     link_html*: seq[string] ## Nil or files to be linked in the index.
 
@@ -17,13 +17,21 @@ type
     specific*: TTable[string, Section] ## All other possible sections.
 
 
+const
+  start_branch* = "gh-pages" ## The git branch containing the generated docs.
+
+
 proc init(X: var Section) =
   ## Initializes a Section with default values.
   X.name = ""
   X.update_html = ""
   X.doc_dir = ""
+  X.ignore_tags = nil
   X.branches = @[]
+  X.doc2_modules = nil
   X.doc_modules = @[]
+  X.rst_files = nil
+  X.link_html = nil
 
 
 proc init_section(): Section =
@@ -42,21 +50,54 @@ proc init_ini_config(): Ini_config =
   result.init
 
 
+proc is_valid(section: Section): bool =
+  ## Returns true if a section is valid.
+  ##
+  ## To be valid, a section requires to have a non null name. Additionally if
+  ## the name is start_branch, some global fields are required to be filled in.
+  if section.name.len < 1: return
+
+  if section.name == start_branch:
+    # Additional checks
+    if section.update_html.len < 1:
+      echo "Missing update_html for section " & section.name & "."
+      return
+    if section.doc_dir.len < 1:
+      echo "Missing doc_dir for section " & section.name & "."
+      return
+
+  result = true
+
+
+proc add(ini: var Ini_config; section: Section) =
+  ## Adds or replaces an existing `section` in the `ini`.
+  ##
+  ## If `section` is not valid, the proc will return without doing anything.
+  ## Failures are echoed.
+  if not section.is_valid:
+    return
+
+  if section.name == start_branch:
+    ini.default = section
+  else:
+    ini.specific[section.name] = section
+
+
 proc load_ini(filename: string): Ini_config =
   ## Loads the specified configuration file.
   ##
   ## Returns the Ini_config structure or raises an IOE hexception.
   var f = filename.newFileStream(fmRead)
-  if f.isNil:
-    raise new_exception(EIO, "Could not open " & filename)
-
+  if f.isNil: raise new_exception(EIO, "Could not open " & filename)
   finally: f.close
 
   var p: TCfgParser
   p.open(f, filename)
   finally: p.close
 
-  var section = ""
+  result.init
+  var s = init_section()
+
   while true:
     var e: TCfgEvent
     try: e = next(p)
@@ -72,13 +113,21 @@ the .ini file.
     case e.kind
     of cfgEof: break
     of cfgSectionStart:
-      section = e.section
-      echo "section ", section
+      result.add(s)
+      s.init()
+      if not e.section.isNil:
+        s.name = e.section
     of cfgKeyValuePair:
-      echo("key-value-pair: " & e.key & ": " & e.value)
+      if s.name.len < 1:
+        echo p.ignore_msg(e)
+      else:
+        echo("key-value-pair: " & e.key & ": " & e.value)
     of cfgOption: discard
     of cfgError: raise new_exception(EInvalidValue,
       "Error parsing " & filename & ": " & e.msg)
+
+  result.add(s)
+  ## TODO: verify here result.
 
 
 proc test() =

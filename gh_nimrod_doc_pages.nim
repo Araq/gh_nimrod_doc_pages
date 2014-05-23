@@ -1,4 +1,4 @@
-import argument_parser, os, tables, strutils, osproc
+import argument_parser, os, tables, strutils, osproc, inidata
 
 type
   Global = object ## \
@@ -39,7 +39,6 @@ const
   ## Maintenance version changes mean bugfixes or non commandline changes.
 
   config_filename = "gh_nimrod_doc_pages.ini"
-  gh_pages = "gh-pages"
   git_ssh_prefix = "git@github.com:" ## Used to detect origin information.
   git_https_prefix = "https://github.com/" ## Detects origin url.
   git_suffix = ".git" ## Mandatory at end of origin url.
@@ -179,8 +178,8 @@ proc process_commandline() =
 
   gather_git_info()
 
-  if not "USER_GRADHA".exists_env and G.git_branch != gh_pages:
-    abort "You have to run the command on your " & gh_pages & " branch."
+  if not "USER_GRADHA".exists_env and G.git_branch != start_branch:
+    abort "You have to run the command on your " & start_branch & " branch."
 
 
 proc generate_templates() =
