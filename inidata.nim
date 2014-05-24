@@ -1,4 +1,4 @@
-import parsecfg, strutils, streams, tables
+import parsecfg, strutils, streams, tables, sequtils, algorithm
 
 type
   Section* = object ## Contains the parameters for a section in the .ini file.
@@ -69,6 +69,33 @@ proc is_valid(section: Section): bool =
   result = true
 
 
+proc is_valid(ini: Ini_config): bool =
+  ## Returns true if the config is valid.
+  ##
+  ## To be valid the default configuration has to be filled in.
+  result = ini.default.is_valid
+
+
+proc `$`*(section: Section): string =
+  ## Outputs the contents of the section in a human friendly way.
+  if not section.is_valid:
+    result = "\n\tInvalid section"
+  else:
+    result = "\n\t[" & section.name & "]"
+    for name, value in fieldPairs(section):
+      if not value.isNil and value.len > 0:
+        result.add "\n\t\t" & name & " = '" & $value & "'"
+
+
+proc `$`*(ini: Ini_config): string =
+  ## Outputs the contents of the parsed configuration.
+  result = "Ini_config:" & $ini.default
+  var keys = to_seq(ini.specific.keys)
+  keys.sort(system.cmp)
+  for key in keys:
+    result.add($ini.specific[key])
+
+
 proc add(ini: var Ini_config; section: Section) =
   ## Adds or replaces an existing `section` in the `ini`.
   ##
@@ -81,6 +108,37 @@ proc add(ini: var Ini_config; section: Section) =
     ini.default = section
   else:
     ini.specific[section.name] = section
+
+
+proc parse_lines(s: var seq[string]; text: string) =
+  ## Adds to `s` whatever text were found in `text`.
+  assert(not s.isNil)
+  for line in text.split_lines:
+    let token = line.strip
+    if token.len > 0:
+      s.add(token)
+
+
+proc parse_lines(text: string): seq[string] =
+  ## Returns a secuence with the contents of text or nil if nothing was found.
+  result = @[]
+  result.parse_lines(text)
+  if result.len < 1:
+    result = nil
+
+
+proc add(section: var Section; event: TCfgEvent; parser: TCfgParser) =
+  ## Adds a key,value pair to the section.
+  case event.key
+  of "update_html": section.update_html = event.value.strip
+  of "doc_dir": section.doc_dir = event.value.strip
+  of "ignore_tags": section.ignore_tags = parse_lines(event.value)
+  of "branches": section.branches.parse_lines(event.value)
+  of "doc2_modules": section.doc2_modules = parse_lines(event.value)
+  of "doc_modules": section.doc_modules.parse_lines(event.value)
+  of "rst_files": section.rst_files = parse_lines(event.value)
+  of "link_html": section.link_html = parse_lines(event.value)
+  else: echo parser.ignore_msg(event)
 
 
 proc load_ini(filename: string): Ini_config =
@@ -121,13 +179,15 @@ the .ini file.
       if s.name.len < 1:
         echo p.ignore_msg(e)
       else:
-        echo("key-value-pair: " & e.key & ": " & e.value)
+        s.add(e, p)
     of cfgOption: discard
     of cfgError: raise new_exception(EInvalidValue,
       "Error parsing " & filename & ": " & e.msg)
 
   result.add(s)
-  ## TODO: verify here result.
+  if not result.is_valid:
+    raise new_exception(EInvalidValue,
+      "Error parsing " & filename & ", doesn't contain all required values.")
 
 
 proc test() =
@@ -137,6 +197,7 @@ proc test() =
     temp_section: Section
   temp_section.init
   ini = load_ini("gh_nimrod_doc_pages.ini")
+  echo ini
   echo "Hey!"
 
 
