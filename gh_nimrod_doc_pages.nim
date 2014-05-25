@@ -1,4 +1,4 @@
-import argument_parser, os, tables, strutils, osproc, inidata
+import argument_parser, os, tables, strutils, osproc, inidata, sequtils
 
 type
   Global = object ## \
@@ -25,6 +25,7 @@ template slurp_html_template(rel_path: string): expr =
 
 template switch_to_config_dir(): stmt =
   ## Switches to the configuration dir and sets a finally to go back later.
+  assert(not G.config_dir.isNil and G.config_dir.len > 0)
   let current_dir = get_current_dir()
   finally: set_current_dir(current_dir)
   G.config_dir.set_current_dir
@@ -102,7 +103,6 @@ proc gather_git_info() =
   ## Fills the git_branch, github_project and github_username, or leaves them
   ## as the empty string. Before running the commands changes directory to the
   ## configuration file.
-  assert(not G.config_dir.isNil and G.config_dir.len > 0)
   switch_to_config_dir()
 
   G.git_branch = run_git("rev-parse --abbrev-ref HEAD")[0]
@@ -213,6 +213,27 @@ proc generate_templates() =
     filename.write_file(data)
 
 
+proc obtain_targets_to_work_on(ini: Ini_config):
+    tuple[tags, branches: seq[string]]  =
+  ## Figures out what tags/branches to work on.
+  ##
+  ## This will retrieve available tags for the repository and filter them
+  ## through Ini_config.ignore_tags. For branches the reverse is done, only
+  ## specified branches are looked up in the git project. If something is
+  ## wrong, a warning is echoed but execution tries to move forward.
+  ##
+  ## Returns a tuple with the list of tags/branches that have to be processed.
+  ## Tags are not to be rebuilt, branches are always refreshed.
+  result.branches = @[]
+  switch_to_config_dir()
+
+  result.tags = run_git("tag --list")
+  if not ini.default.ignore_tags.isNil:
+    result.tags = result.tags.filter_it(
+      not ini.default.ignore_tags.contains(it))
+  echo repr(result.tags)
+
+
 proc main() =
   ## Main entry point of the program.
   ##
@@ -222,6 +243,8 @@ proc main() =
   if G.boot:
     generate_templates()
   else:
+    let ini = load_ini(G.config_path)
+    discard obtain_targets_to_work_on(ini)
     echo G.config_dir
     echo G.config_path
 

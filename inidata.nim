@@ -141,7 +141,7 @@ proc add(section: var Section; event: TCfgEvent; parser: TCfgParser) =
   else: echo parser.ignore_msg(event)
 
 
-proc load_ini(filename: string): Ini_config =
+proc load_ini*(filename: string): Ini_config =
   ## Loads the specified configuration file.
   ##
   ## Returns the Ini_config structure or raises an IOE hexception.
