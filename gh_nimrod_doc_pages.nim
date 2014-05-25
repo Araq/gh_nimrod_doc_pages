@@ -23,6 +23,13 @@ template slurp_html_template(rel_path: string): expr =
   (rel_path, slurp("boot_html_template" / rel_path))
 
 
+template switch_to_config_dir(): stmt =
+  ## Switches to the configuration dir and sets a finally to go back later.
+  let current_dir = get_current_dir()
+  finally: set_current_dir(current_dir)
+  G.config_dir.set_current_dir
+
+
 const
   version_str* = "0.1.1" ## Program version as a string.
   version_int* = (major: 0, minor: 1, maintenance: 1) ## \
@@ -93,7 +100,11 @@ proc gather_git_info() =
   ## Obtains juicy bits about the git project we are on.
   ##
   ## Fills the git_branch, github_project and github_username, or leaves them
-  ## as the empty string.
+  ## as the empty string. Before running the commands changes directory to the
+  ## configuration file.
+  assert(not G.config_dir.isNil and G.config_dir.len > 0)
+  switch_to_config_dir()
+
   G.git_branch = run_git("rev-parse --abbrev-ref HEAD")[0]
   G.github_username = ""
   G.github_project = ""
@@ -121,7 +132,6 @@ proc gather_git_info() =
   if G.github_project.len < 1:
     echo "Warning, couldn't extract github project name from local repo."
     G.github_project = template_github_project
-
 
 
 proc process_commandline() =
@@ -171,10 +181,12 @@ proc process_commandline() =
   if G.config_path.len > 0 and not G.config_path.exists_file:
     abort "Sorry, '" & G.config_path & "' doesn't seem to be a valid file."
 
+  # Patch the global variables to always contain meaningful values.
   if G.config_path.len > 0:
     G.config_dir = G.config_path.parent_dir
   else:
     G.config_dir = "."
+    G.config_path = config_filename
 
   gather_git_info()
 
@@ -209,6 +221,9 @@ proc main() =
   process_commandline()
   if G.boot:
     generate_templates()
+  else:
+    echo G.config_dir
+    echo G.config_path
 
 
 when isMainModule: main()
