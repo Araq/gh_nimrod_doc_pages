@@ -84,7 +84,7 @@ const
     ]
 
 
-proc run_git(params: string): seq[string] =
+proc git(params: string): seq[string] =
   ## Runs the specified git commandline.
   ##
   ## Returns the output as text lines. Always returns a valid sequence, but if
@@ -97,6 +97,31 @@ proc run_git(params: string): seq[string] =
     result = output.split_lines
 
 
+proc git_tag_or_branch(prefix: string): seq[string] =
+  ## Wraps over git() using a specific porcelain to get tag/branches.
+  ##
+  ## This will invoke "git for-each-ref --format='%(refname)' prefix" where
+  ## `prefix` is ``refs/tags``, ``refs/heads`` or any other valid prefix. The
+  ## returned list will have ``prefix`` itself removed. See
+  ## http://stackoverflow.com/a/3847586/172690 for reference.
+  ##
+  ## Always returns at least the empty sequence.
+  result = @[]
+  for line in git("for-each-ref --format='%(refname)' " & prefix):
+    if line.starts_with(prefix):
+      result.add(line[prefix.len .. <line.len])
+
+
+proc git_tags(): seq[string] =
+  ## Returns the list of available tags or the empty sequence.
+  result = git_tag_or_branch("refs/tags/")
+
+
+proc git_branches(): seq[string] =
+  ## Returns the list of available branches or the empty sequence.
+  result = git_tag_or_branch("refs/heads/")
+
+
 proc gather_git_info() =
   ## Obtains juicy bits about the git project we are on.
   ##
@@ -105,11 +130,11 @@ proc gather_git_info() =
   ## configuration file.
   switch_to_config_dir()
 
-  G.git_branch = run_git("rev-parse --abbrev-ref HEAD")[0]
+  G.git_branch = git("rev-parse --abbrev-ref HEAD")[0]
   G.github_username = ""
   G.github_project = ""
   # Try to find out origin remote with full GitHub username/project name
-  for line in run_git("remote -v"):
+  for line in git("remote -v"):
     if not line.starts_with("origin") or line.find("(push)") < 0:
       continue
     # Found line, try to parse info.
@@ -224,14 +249,17 @@ proc obtain_targets_to_work_on(ini: Ini_config):
   ##
   ## Returns a tuple with the list of tags/branches that have to be processed.
   ## Tags are not to be rebuilt, branches are always refreshed.
-  result.branches = @[]
   switch_to_config_dir()
 
-  result.tags = run_git("tag --list")
+  result.tags = git_tags()
   if not ini.default.ignore_tags.isNil:
     result.tags = result.tags.filter_it(
       not ini.default.ignore_tags.contains(it))
-  echo repr(result.tags)
+
+  # Read the available branches.
+  let available_branches = git_branches()
+  result.branches = ini.default.branches.filter_it(
+    available_branches.contains(it))
 
 
 proc main() =
@@ -244,7 +272,7 @@ proc main() =
     generate_templates()
   else:
     let ini = load_ini(G.config_path)
-    discard obtain_targets_to_work_on(ini)
+    echo repr(obtain_targets_to_work_on(ini))
     echo G.config_dir
     echo G.config_path
 
