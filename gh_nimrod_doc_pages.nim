@@ -1,5 +1,11 @@
 import argument_parser, os, tables, strutils, osproc, inidata, sequtils
 
+when defined(windows):
+  import windows
+else:
+  import posix
+
+
 type
   Global = object ## \
     ## Holds all the global variables of the process.
@@ -13,9 +19,16 @@ type
     git_branch: string ## Contains the name of the current branch.
     github_username: string ## Empty string or username.
     github_project: string ## Empty string or GitHub project name.
+    clone_dir: string ## Path to the temporary git clones directory. \
+    ## This path is relative to config_dir.
 
 
 var G: Global
+# Obtain current pid and store it for later.
+when defined(windows):
+  let my_pid = $GetCurrentProcessId()
+else:
+  let my_pid = $getpid()
 
 
 template slurp_html_template(rel_path: string): expr =
@@ -277,8 +290,27 @@ proc generate_docs(ini: Ini_config; target: string; force: bool) =
   ## Pass the ini configuration which will be combined for `target`. If `force`
   ## is false, the documentation won't be generated if the target directory
   ## already exists.
-  let conf = ini.combine(target)
-  echo "Combined configuration:", conf
+  switch_to_config_dir()
+  let
+    conf = ini.combine(target)
+    checkout_dir = G.clone_dir/target
+
+  discard git("clone --local --branch " & target &
+    " --single-branch --recursive --depth 1 . " & checkout_dir)
+  if not checkout_dir.exists_dir:
+    quit "Error checking out '" & target & "' into '" & checkout_dir & "'."
+
+
+proc create_clone_dir() =
+  ## Creates a temporary directory for processing and sets it as global.
+  ##
+  ## The INI.clone_dir field is updated with the new directory. You have to
+  ## make sure it gets erased later.
+  G.clone_dir = "ghtemp_" & my_pid
+  let full = G.config_dir/G.clone_dir
+  if full.exists_dir:
+    quit "Can't work with existing dir '" & full & "' already there!"
+  full.create_dir
 
 
 proc main() =
@@ -293,6 +325,10 @@ proc main() =
     let
       ini = G.config_path.load_ini
       targets = ini.obtain_targets_to_work_on
+
+    create_clone_dir()
+    finally: G.clone_dir.remove_dir
+
     for target in targets.tags: ini.generate_docs(target, false)
     for target in targets.branches: ini.generate_docs(target, true)
 
