@@ -262,6 +262,16 @@ proc obtain_targets_to_work_on(ini: Ini_config):
     available_branches.contains(it))
 
 
+proc generate_docs(ini: Ini_config; target: string; force: bool) =
+  ## Processes the specified target and generates its documentation.
+  ##
+  ## Pass the ini configuration which will be combined for `target`. If `force`
+  ## is false, the documentation won't be generated if the target directory
+  ## already exists.
+  let conf = ini.combine(target)
+  echo "Combined configuration:", conf
+
+
 proc main() =
   ## Main entry point of the program.
   ##
@@ -271,10 +281,11 @@ proc main() =
   if G.boot:
     generate_templates()
   else:
-    let ini = load_ini(G.config_path)
-    echo repr(obtain_targets_to_work_on(ini))
-    echo G.config_dir
-    echo G.config_path
+    let
+      ini = G.config_path.load_ini
+      targets = ini.obtain_targets_to_work_on
+    for target in targets.tags: ini.generate_docs(target, false)
+    for target in targets.branches: ini.generate_docs(target, true)
 
 
 when isMainModule: main()

@@ -96,6 +96,32 @@ proc `$`*(ini: Ini_config): string =
     result.add($ini.specific[key])
 
 
+proc combine*(ini: Ini_config; target: string): Section =
+  ## Returns a Section for the specific `target`.
+  ##
+  ## The returned section will use the default settings for whatever is missing.
+  if not ini.specific.has_key(target):
+    # If there is no specific target, use the default one and change the name.
+    result = ini.default
+    result.name = target
+    return
+
+  result = ini.specific[target]
+  result.update_html = ini.default.update_html
+  result.doc_dir = ini.default.doc_dir
+  result.ignore_tags = ini.default.ignore_tags
+  result.branches = ini.default.branches
+  # Patch up the following variables.
+  if result.doc_modules.len < 1 and ini.default.doc_modules.len > 0:
+    result.doc_modules = ini.default.doc_modules
+  if result.doc2_modules.isNil and not ini.default.doc2_modules.isNil:
+    result.doc2_modules = ini.default.doc2_modules
+  if result.rst_files.isNil and not ini.default.rst_files.isNil:
+    result.rst_files = ini.default.rst_files
+  if result.link_html.isNil and not ini.default.link_html.isNil:
+    result.link_html = ini.default.link_html
+
+
 proc add(ini: var Ini_config; section: Section) =
   ## Adds or replaces an existing `section` in the `ini`.
   ##
