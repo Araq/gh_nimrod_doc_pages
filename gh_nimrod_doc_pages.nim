@@ -83,6 +83,8 @@ const
     slurp_html_template("stylesheets/stylesheet.css"),
     ]
 
+  nojekyll_filename = ".nojekyll" ## Witness to disable GitHub jekyll.
+
 
 proc git(params: string): seq[string] =
   ## Runs the specified git commandline.
@@ -224,11 +226,13 @@ proc generate_templates() =
   ##
   ## If any of the files already exists it won't be overwritten. This proc
   ## presumes it will always run with relative paths to the working directory.
+  var generated = 0
   for filename, contents in template_files.items:
     if filename.exists_file:
       echo "File '" & filename & "' already exists, skipping."
       continue
     echo "Generating missing '" & filename & "'"
+    generated.inc
     # Make sure the directory exists.
     let dir = filename.parent_dir
     if dir.len > 0: dir.create_dir
@@ -236,6 +240,11 @@ proc generate_templates() =
       .replace(template_github_username, G.github_username)
       .replace(template_github_project, G.github_project))
     filename.write_file(data)
+
+  # If all files were generated, create file to prevent jekyll from running.
+  if generated == template_files.len:
+    echo "Generating '" & nojekyll_filename & "' due to lack of other files."
+    nojekyll_filename.write_file("")
 
 
 proc obtain_targets_to_work_on(ini: Ini_config):
