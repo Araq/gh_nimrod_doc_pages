@@ -1,4 +1,5 @@
-import argument_parser, os, tables, strutils, osproc, inidata, sequtils
+import argument_parser, os, tables, strutils, osproc, inidata, sequtils,
+  global_patches
 
 when defined(windows):
   import windows
@@ -16,6 +17,9 @@ type
     git_exe: string ## \
     ## Full path to the git executable or the empty string. This is initialized
     ## in process_commandline.
+    nimrod_exe: string ## \
+    ## Full path to the nimrod compiler or the empty string. This is
+    ## initialized in process_commandline.
     git_branch: string ## Contains the name of the current branch.
     github_username: string ## Empty string or username.
     github_project: string ## Empty string or GitHub project name.
@@ -40,7 +44,7 @@ template switch_to_config_dir(): stmt =
   ## Switches to the configuration dir and sets a finally to go back later.
   assert(not G.config_dir.isNil and G.config_dir.len > 0)
   let current_dir = get_current_dir()
-  finally: set_current_dir(current_dir)
+  finally: current_dir.set_current_dir
   G.config_dir.set_current_dir
 
 
@@ -177,8 +181,9 @@ proc gather_git_info() =
 proc process_commandline() =
   ## Parses the commandline, modifying the global structure.
   ##
-  ## It also initializes fields like *git_exe*.
+  ## It also initializes fields like `git_exe` or `nimrod_exe`.
   G.git_exe = "git".find_exe
+  G.nimrod_exe = "nimrod".find_exe
 
   var PARAMS: seq[Tparameter_specification] = @[]
   PARAMS.add(new_parameter_specification(PK_HELP,
@@ -213,7 +218,11 @@ proc process_commandline() =
   # Input validation.
   if not G.git_exe.exists_file:
     quit "This program relies on the git executable being available, but it " &
-      "could not be found on your $PATH!"
+      "could not be found in your $PATH!"
+
+  if not G.nimrod_exe.exists_file:
+    quit "This program relies on the nimrod compiler being available, but " &
+      "it could not be found in your $PATH!"
 
   if G.boot and G.config_path.len > 0:
     abort "Sorry, can't use both --boot and --config switches."
@@ -284,6 +293,114 @@ proc obtain_targets_to_work_on(ini: Ini_config):
     available_branches.contains(it))
 
 
+proc scan_files(extension: string, dir = "."): seq[string] =
+  ## Returns the relative paths to files found with the specified extension.
+  ##
+  ## Hmm... seems like making this an iterator which yields the path crashes
+  ## the generated runtime code...
+  assert extension.not_nil and extension[0] == '.'
+  result = @[]
+
+  for kind, path in dir.walk_dir:
+    assert path.len > 2
+    let good_path = path[2 .. <path.len]
+    # Ignore hidden files and hidden directories.
+    if good_path[0] == '.':
+      continue
+    case kind
+    of pcFile, pcLinkToFile:
+      if good_path.split_file.ext == extension:
+        result.add(good_path)
+    of pcDir, pcLinkToDir:
+      for recursive in extension.scan_files(path):
+        result.add(recursive)
+
+
+proc nimrod(command, src, dest: string): bool =
+  ## Runs Nimrod's `command` from `src` to `dest`.
+  ##
+  ## Returns true if everything went ok, false if the file was skipped.
+  if not src.exists_file:
+    echo "Skiping invalid '" & src & "'"
+    return
+
+  let
+    (output, exit) = execCmdEx(G.nimrod_exe & " " & command &
+      " --verbosity:0 --out:" & dest & " " & src)
+
+  if exit != 0:
+    echo "Error running " & command & " on '" & src & "', compiler aborted."
+    return
+
+  if not dest.exists_file:
+    echo "Error running " & command & " on '" & src & "', html file not found."
+    return
+  result = true
+
+
+proc rst(input_rst: string): string =
+  ## Runs `input_rst` through Nimrod's rst2html command.
+  ##
+  ## Returns the empty string or the relative path to the generated file.
+  let dest = input_rst.change_file_ext("html")
+  if nimrod("rst2html", input_rst, dest):
+    result = dest
+  else:
+    result = ""
+
+
+proc doc1(input_nim: string): string =
+  ## Runs `input_nim` through Nimrod's doc command.
+  ##
+  ## Returns the empty string or the relative path to the generated file.
+  let dest = input_nim.change_file_ext("html")
+  if nimrod("doc", input_nim, dest):
+    result = dest
+  else:
+    result = ""
+
+
+proc doc2(input_nim: string): string =
+  ## Runs `input_nim` through Nimrod's doc2 command.
+  ##
+  ## Returns the empty string or the relative path to the generated file.
+  let dest = input_nim.change_file_ext("html")
+  if nimrod("doc2", input_nim, dest):
+    result = dest
+  else:
+    result = ""
+
+
+proc generate_docs(s: Section; src_dir: string): seq[string] =
+  ## Generates in `src_dir` documentation according to the `s` configuration.
+  ##
+  ## Returns the list of relative paths to the generated HTML files.
+  assert src_dir.not_nil and src_dir.len > 0
+  assert s.doc_modules.not_nil
+  result = @[]
+
+  # Save the src_dir too, changing to it to get relative paths.
+  let current_dir = get_current_dir()
+  finally: current_dir.set_current_dir
+  src_dir.set_current_dir
+
+  template loop_files(run: proc(x: string): string): stmt =
+    for filename in files:
+      let out_html = filename.run
+      if out_html.len > 0:
+        result.add(out_html)
+
+  # Process doc2 files, if any specified.
+  var files = if s.doc2_modules.is_nil: scan_files(".nim") else: s.doc2_modules
+  loop_files(doc2)
+  # Process specified doc files.
+  files = s.doc_modules
+  loop_files(doc1)
+  # And finally rst files.
+  files = if s.rst_files.is_nil: scan_files(".rst") else: s.rst_files
+  loop_files(rst)
+
+
 proc generate_docs(ini: Ini_config; target: string; force: bool) =
   ## Processes the specified target and generates its documentation.
   ##
@@ -294,11 +411,26 @@ proc generate_docs(ini: Ini_config; target: string; force: bool) =
   let
     conf = ini.combine(target)
     checkout_dir = G.clone_dir/target
+    final_dir = ini.default.doc_dir/target
+
+  finally:
+    try: checkout_dir.remove_dir
+    except EOS: discard
+
+  echo "Generating docs for target '", target, "'"
 
   discard git("clone --local --branch " & target &
     " --single-branch --recursive --depth 1 . " & checkout_dir)
   if not checkout_dir.exists_dir:
     quit "Error checking out '" & target & "' into '" & checkout_dir & "'."
+
+  for relative_path in conf.generate_docs(checkout_dir):
+    let
+      src = checkout_dir/relative_path
+      dest = final_dir/relative_path
+    echo target/relative_path
+    dest.split_file.dir.create_dir
+    src.copy_file_with_permissions(dest)
 
 
 proc create_clone_dir() =
