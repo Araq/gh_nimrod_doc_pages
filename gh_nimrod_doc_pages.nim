@@ -42,7 +42,7 @@ template slurp_html_template(rel_path: string): expr =
 
 template switch_to_config_dir(): stmt =
   ## Switches to the configuration dir and sets a finally to go back later.
-  assert(not G.config_dir.isNil and G.config_dir.len > 0)
+  assert G.config_dir.not_nil and G.config_dir.len > 0
   let current_dir = get_current_dir()
   finally: current_dir.set_current_dir
   G.config_dir.set_current_dir
@@ -283,7 +283,7 @@ proc obtain_targets_to_work_on(ini: Ini_config):
   switch_to_config_dir()
 
   result.tags = git_tags()
-  if not ini.default.ignore_tags.isNil:
+  if ini.default.ignore_tags.not_nil:
     result.tags = result.tags.filter_it(
       not ini.default.ignore_tags.contains(it))
 

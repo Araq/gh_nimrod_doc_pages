@@ -1,4 +1,4 @@
-import parsecfg, strutils, streams, tables, sequtils, algorithm
+import parsecfg, strutils, streams, tables, sequtils, algorithm, global_patches
 
 type
   Section* = object ## Contains the parameters for a section in the .ini file.
@@ -83,7 +83,7 @@ proc `$`*(section: Section): string =
   else:
     result = "\n\t[" & section.name & "]"
     for name, value in fieldPairs(section):
-      if not value.isNil and value.len > 0:
+      if value.not_nil and value.len > 0:
         result.add "\n\t\t" & name & " = '" & $value & "'"
 
 
@@ -114,11 +114,11 @@ proc combine*(ini: Ini_config; target: string): Section =
   # Patch up the following variables.
   if result.doc_modules.len < 1 and ini.default.doc_modules.len > 0:
     result.doc_modules = ini.default.doc_modules
-  if result.doc2_modules.isNil and not ini.default.doc2_modules.isNil:
+  if result.doc2_modules.is_nil and ini.default.doc2_modules.not_nil:
     result.doc2_modules = ini.default.doc2_modules
-  if result.rst_files.isNil and not ini.default.rst_files.isNil:
+  if result.rst_files.is_nil and ini.default.rst_files.not_nil:
     result.rst_files = ini.default.rst_files
-  if result.link_html.isNil and not ini.default.link_html.isNil:
+  if result.link_html.is_nil and ini.default.link_html.not_nil:
     result.link_html = ini.default.link_html
 
 
@@ -138,7 +138,7 @@ proc add(ini: var Ini_config; section: Section) =
 
 proc parse_lines(s: var seq[string]; text: string) =
   ## Adds to `s` whatever text were found in `text`.
-  assert(not s.isNil)
+  assert s.not_nil
   for line in text.split_lines:
     let token = line.strip
     if token.len > 0:
@@ -172,7 +172,7 @@ proc load_ini*(filename: string): Ini_config =
   ##
   ## Returns the Ini_config structure or raises an IOE hexception.
   var f = filename.newFileStream(fmRead)
-  if f.isNil: raise new_exception(EIO, "Could not open " & filename)
+  if f.is_nil: raise new_exception(EIO, "Could not open " & filename)
   finally: f.close
 
   var p: TCfgParser
@@ -199,7 +199,7 @@ the .ini file.
     of cfgSectionStart:
       result.add(s)
       s.init()
-      if not e.section.isNil:
+      if e.section.not_nil:
         s.name = e.section
     of cfgKeyValuePair:
       if s.name.len < 1:
