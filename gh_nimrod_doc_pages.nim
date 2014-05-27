@@ -84,7 +84,8 @@ const
   param_boot = @["-b", "--boot"]
   help_boot = "Creates missing files required for operation in the " &
     "working directory, which should be inside a git tree with a branch " &
-    "named gh-pages. You can't use this switch together with --config."
+    "named " & start_branch & ". You can't use this switch together " &
+    "with --config."
 
   template_files = @[
     slurp_html_template(config_filename),
@@ -239,8 +240,8 @@ proc process_commandline() =
 
   gather_git_info()
 
-  if not "USER_GRADHA".exists_env and G.git_branch != start_branch:
-    abort "You have to run the command on your " & start_branch & " branch."
+  #if not "USER_GRADHA".exists_env and G.git_branch != start_branch:
+  #  abort "You have to run the command on your " & start_branch & " branch."
 
 
 proc generate_templates() =
@@ -413,6 +414,10 @@ proc generate_docs(ini: Ini_config; target: string; force: bool) =
     checkout_dir = G.clone_dir/target
     final_dir = ini.default.doc_dir/target
 
+  if not force and final_dir.exists_dir:
+    echo "Skipping generation for target '", target, "' as it already exists."
+    return
+
   finally:
     try: checkout_dir.remove_dir
     except EOS: discard
@@ -457,6 +462,13 @@ proc main() =
     let
       ini = G.config_path.load_ini
       targets = ini.obtain_targets_to_work_on
+    # Figure out if the final HTML file exists, otherwise avoid doing any work.
+    var update_html = ini.default.update_html
+    if not update_html.is_absolute:
+      update_html = G.config_dir/update_html
+    if not update_html.exists_file:
+      quit "The HTML file to update (" & update_html & ") doesn't " &
+        " seem to be valid."
 
     create_clone_dir()
     finally: G.clone_dir.remove_dir
