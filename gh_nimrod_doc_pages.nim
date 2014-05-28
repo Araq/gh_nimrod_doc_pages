@@ -1,5 +1,5 @@
 import argument_parser, os, tables, strutils, osproc, inidata, sequtils,
-  global_patches
+  global_patches, sets
 
 when defined(windows):
   import windows
@@ -102,6 +102,8 @@ const
     ]
 
   nojekyll_filename = ".nojekyll" ## Witness to disable GitHub jekyll.
+
+  keep_temp = false ## Internal development switch, avoids deletion of files.
 
 
 proc git(params: string): seq[string] =
@@ -317,23 +319,28 @@ proc scan_files(extension: string, dir = "."): seq[string] =
         result.add(recursive)
 
 
-proc nimrod(command, src, dest: string): bool =
+proc nimrod(command, src: string; dest = ""): bool =
   ## Runs Nimrod's `command` from `src` to `dest`.
   ##
-  ## Returns true if everything went ok, false if the file was skipped.
-  if not src.exists_file:
+  ## Returns true if everything went ok, false if the file was skipped. The
+  ## `dest` parameter can't be nil, but if you pass the empty string the the
+  ## typical ``--out:dest`` won't be appended to the command.
+  assert command.not_nil and src.not_nil and dest.not_nil
+  if not src.exists_file and not src.exists_dir:
     echo "Skiping invalid '" & src & "'"
     return
 
   let
-    (output, exit) = execCmdEx(G.nimrod_exe & " " & command &
-      " --verbosity:0 --out:" & dest & " " & src)
+    out_param = if dest.len > 0: "--out:" & dest else: ""
+    command = G.nimrod_exe & " " & command &
+      " --verbosity:0 --index:on " & out_param & " " & src
+    (output, exit) = execCmdEx(command)
 
   if exit != 0:
     echo "Error running " & command & " on '" & src & "', compiler aborted."
     return
 
-  if not dest.exists_file:
+  if dest.len > 0 and not dest.exists_file:
     echo "Error running " & command & " on '" & src & "', html file not found."
     return
   result = true
@@ -372,6 +379,31 @@ proc doc2(input_nim: string): string =
     result = ""
 
 
+proc build_index(directory: string): string =
+  ## Builds the index file for `directory`.
+  ##
+  ## Returns the empty string if something went wrong, or the path to the
+  ## generated index file.
+  result = ""
+  let dest = directory/"theindex.html"
+  if nimrod("buildIndex", directory, dest):
+    if dest.exists_file:
+      result = dest
+
+
+proc extract_unique_directories(filenames: seq[string]): seq[string] =
+  ## Returns the unique paths for the specified filenames.
+  ##
+  ## The current dir will always be returned as a single dot. The proc
+  ## guarantees that all directories are returned once even if they are
+  ## specified multiple times in `filenames`.
+  var seen = initSet[string]()
+  for filename in filenames:
+    let dir = filename.split_file.dir
+    seen.incl(if dir.len < 1: "." else: dir)
+  result = to_seq(seen.items)
+
+
 proc generate_docs(s: Section; src_dir: string): seq[string] =
   ## Generates in `src_dir` documentation according to the `s` configuration.
   ##
@@ -386,6 +418,7 @@ proc generate_docs(s: Section; src_dir: string): seq[string] =
   src_dir.set_current_dir
 
   template loop_files(run: proc(x: string): string): stmt =
+    # Helper which loops over the `files` variable calling a doc command.
     for filename in files:
       let out_html = filename.run
       if out_html.len > 0:
@@ -400,6 +433,15 @@ proc generate_docs(s: Section; src_dir: string): seq[string] =
   # And finally rst files.
   files = if s.rst_files.is_nil: scan_files(".rst") else: s.rst_files
   loop_files(rst)
+
+  # Generate theindex.html files from the .idx ones.
+  for dir in result.extract_unique_directories:
+    let index = dir.build_index
+    if index.len > 0:
+      if index.starts_with("."):
+        result.add(index[2 .. <index.len])
+      else:
+        result.add(index)
 
 
 proc generate_docs(ini: Ini_config; target: string; force: bool) =
@@ -418,9 +460,11 @@ proc generate_docs(ini: Ini_config; target: string; force: bool) =
     echo "Skipping generation for target '", target, "' as it already exists."
     return
 
+  # Make sure to remove temporary files. When appropriate.
   finally:
-    try: checkout_dir.remove_dir
-    except EOS: discard
+    if not keep_temp:
+      try: checkout_dir.remove_dir
+      except EOS: discard
 
   echo "Generating docs for target '", target, "'"
 
@@ -471,7 +515,8 @@ proc main() =
         " seem to be valid."
 
     create_clone_dir()
-    finally: G.clone_dir.remove_dir
+    finally:
+      if not keep_temp: G.clone_dir.remove_dir
 
     for target in targets.tags: ini.generate_docs(target, false)
     for target in targets.branches: ini.generate_docs(target, true)
