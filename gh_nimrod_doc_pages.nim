@@ -1,5 +1,5 @@
 import argument_parser, os, tables, strutils, osproc, inidata, sequtils,
-  global_patches, sets
+  global_patches, sets, algorithm
 
 when defined(windows):
   import windows
@@ -385,23 +385,58 @@ proc build_index(directory: string): string =
   ## Returns the empty string if something went wrong, or the path to the
   ## generated index file.
   result = ""
-  let dest = directory/"theindex.html"
-  if nimrod("buildIndex", directory, dest):
+  let
+    dest = directory/"theindex.html"
+    dir = if directory.len < 1: "." else: directory
+  if nimrod("buildIndex", dir, dest):
     if dest.exists_file:
       result = dest
 
 
-proc extract_unique_directories(filenames: seq[string]): seq[string] =
+proc extract_unique_directories(filenames: seq[string],
+    flatten: bool): seq[string] =
   ## Returns the unique paths for the specified filenames.
   ##
-  ## The current dir will always be returned as a single dot. The proc
-  ## guarantees that all directories are returned once even if they are
-  ## specified multiple times in `filenames`.
-  var seen = initSet[string]()
+  ## The current dir will be returned as the empty string, you might need to
+  ## change that to a single dot for certain operations. The proc guarantees
+  ## that all directories are returned once even if they are specified multiple
+  ## times in `filenames`.
+  ##
+  ## If `flatten` is true, only unique prefix paths will be returned. So if the
+  ## paths are ``a/b``, ``c/b`` and ``a/b/c``, the path ``a/b/c`` will be
+  ## dropped because ``a/b`` already includes it.
+  ##
+  ## The returned paths will be sorted alphabetically.
+  var SEEN = initSet[string]()
+  # Extract the paths and filter them to have unique entries.
   for filename in filenames:
     let dir = filename.split_file.dir
-    seen.incl(if dir.len < 1: "." else: dir)
-  result = to_seq(seen.items)
+    SEEN.incl(dir)
+
+  # Sort them, first could be the empty string.
+  var TEMP = to_seq(SEEN.items)
+  TEMP.sort(system.cmp)
+
+  # Without flattening return already the list.
+  if not flatten or TEMP.len < 1:
+    result = TEMP
+    return
+
+  # Special case were first directory is the current directory (empty string).
+  if TEMP[0].len < 1:
+    result = TEMP[0 .. 0]
+    return
+
+  # Meh, iterate through seen results removing posterior elements.
+  var P = 0
+  while P < TEMP.len:
+    let
+      prefix1 = TEMP[P] & dir_sep
+      prefix2 = TEMP[P] & alt_sep
+    TEMP = TEMP.filterIt(
+      (not it.starts_with(prefix1)) and (not it.starts_with(prefix2)))
+    P.inc
+  result = TEMP
 
 
 proc generate_docs(s: Section; src_dir: string): seq[string] =
@@ -435,13 +470,10 @@ proc generate_docs(s: Section; src_dir: string): seq[string] =
   loop_files(rst)
 
   # Generate theindex.html files from the .idx ones.
-  for dir in result.extract_unique_directories:
+  for dir in result.extract_unique_directories(false):
     let index = dir.build_index
     if index.len > 0:
-      if index.starts_with("."):
-        result.add(index[2 .. <index.len])
-      else:
-        result.add(index)
+      result.add(index)
 
 
 proc generate_docs(ini: Ini_config; target: string; force: bool) =
