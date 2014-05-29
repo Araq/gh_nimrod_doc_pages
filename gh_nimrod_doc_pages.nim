@@ -49,7 +49,12 @@ template switch_to_config_dir(): stmt =
 
 
 const
-  version_str* = "0.1.1" ## Program version as a string.
+  name = "gh_nimrod_doc_pages"
+  config_filename = name & ".ini"
+
+  version_str* = name & "-0.1.1" ## Program version as a string. \
+  ## The format is ``string-digit(.digit)*``.
+
   version_int* = (major: 0, minor: 1, maintenance: 1) ## \
   ## Program version as an integer tuple.
   ##
@@ -63,7 +68,6 @@ const
   ##
   ## Maintenance version changes mean bugfixes or non commandline changes.
 
-  config_filename = "gh_nimrod_doc_pages.ini"
   git_ssh_prefix = "git@github.com:" ## Used to detect origin information.
   git_https_prefix = "https://github.com/" ## Detects origin url.
   git_suffix = ".git" ## Mandatory at end of origin url.
@@ -207,7 +211,7 @@ proc process_commandline() =
     quit(QuitFailure)
 
   if G.params.options.has_key(param_version[0]):
-    echo "Version ", version_str
+    echo "Version ", version_str, "."
     quit()
 
   if G.params.options.has_key(param_boot[0]):
