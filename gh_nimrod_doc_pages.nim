@@ -1,5 +1,5 @@
 import argument_parser, os, tables, strutils, osproc, inidata, sequtils,
-  global_patches, sets, algorithm
+  global_patches, sets, algorithm, packages/docutils/rstgen
 
 when defined(windows):
   import windows
@@ -439,6 +439,43 @@ proc extract_unique_directories(filenames: seq[string],
   result = TEMP
 
 
+proc mangle_idx(filename, prefix: string): string =
+  ## Reads `filename` and returns it as a string with `prefix` applied.
+  ##
+  ## All the paths in the idx file will be prefixed with `prefix`. This is done
+  ## adding the prefix to the second *column* which is meant to be the html
+  ## file reference.
+  result = ""
+  for line in filename.lines:
+    var cols = to_seq(line.split('\t'))
+    if cols.len > 1: cols[1] = prefix/cols[1]
+    result.add(cols.join("\t") & "\n")
+
+
+proc collapse_idx(base_dir: string) =
+  ## Walks `base_dir` recursively collapsing idx files.
+  ##
+  ## The files are collapsed to the base directory using the semi full relative
+  ## path replacing path separators with underscores. The contents of the idx
+  ## files are modified to contain the relative path.
+  let base_dir = if base_dir.len < 1: "." else: base_dir
+  for path in base_dir.walk_dir_rec({pcFile, pcLinkToFile, pcDir, pcLinkToDir}):
+    let (dir, name, ext) = path.split_file
+    # Ignore files which are not an index.
+    if ext != index_ext: continue
+    # Ignore files found in the base_dir.
+    if dir.same_file(base_dir): continue
+    # Extract the parent paths.
+    let dest = base_dir/(name & ext)
+    var relative_dir = dir[base_dir.len .. <dir.len]
+    if relative_dir[0] == dir_sep or  relative_dir[0] == alt_sep:
+      relative_dir.delete(0, 0)
+    assert(not relative_dir.is_absolute)
+
+    echo "Flattening ", path, " to ", dest
+    dest.write_file(mangle_idx(path, relative_dir))
+
+
 proc generate_docs(s: Section; src_dir: string): seq[string] =
   ## Generates in `src_dir` documentation according to the `s` configuration.
   ##
@@ -469,8 +506,13 @@ proc generate_docs(s: Section; src_dir: string): seq[string] =
   files = if s.rst_files.is_nil: scan_files(".rst") else: s.rst_files
   loop_files(rst)
 
-  # Generate theindex.html files from the .idx ones.
-  for dir in result.extract_unique_directories(false):
+  # Generate theindex.html from idx files.
+  let dirs = result.extract_unique_directories(not s.multiple_indices)
+  # Do we need to preprocess idx files?
+  if not s.multiple_indices:
+    for dir in dirs: dir.collapse_idx
+  # Ok, now process the files.
+  for dir in dirs:
     let index = dir.build_index
     if index.len > 0:
       result.add(index)

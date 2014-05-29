@@ -7,6 +7,8 @@ type
     doc_dir*: string ## Not nil. Base directory where docs will be placed.
     ignore_tags*: seq[string] ## Nil or contains the tags to ignore.
     branches*: seq[string] ## Not nil. Branches to regenerate.
+
+    multiple_indices*: bool ## When true, the user wants multiple theindex.html.
     doc2_modules*: seq[string] ## Nil or files to run through doc2 command.
     doc_modules*: seq[string] ## Not nil. Files to run through doc command.
     rst_files*: seq[string] ## Nil or files to be rested.
@@ -76,6 +78,12 @@ proc is_valid(ini: Ini_config): bool =
   result = ini.default.is_valid
 
 
+proc safe(x: seq[string]): string =
+  if x.is_nil: "" else: "'" & $x & "'"
+proc safe(x: string): string =
+  if x.is_nil: "" else: "'" & $x & "'"
+proc safe(x: bool): string = $x
+
 proc `$`*(section: Section): string =
   ## Outputs the contents of the section in a human friendly way.
   if not section.is_valid:
@@ -83,8 +91,9 @@ proc `$`*(section: Section): string =
   else:
     result = "\n\t[" & section.name & "]"
     for name, value in fieldPairs(section):
-      if value.not_nil and value.len > 0:
-        result.add "\n\t\t" & name & " = '" & $value & "'"
+      let v = value.safe
+      if v.len > 0:
+        result.add "\n\t\t" & name & " = " & v
 
 
 proc `$`*(ini: Ini_config): string =
@@ -155,15 +164,16 @@ proc parse_lines(text: string): seq[string] =
 
 proc add(section: var Section; event: TCfgEvent; parser: TCfgParser) =
   ## Adds a key,value pair to the section.
-  case event.key
-  of "update_html": section.update_html = event.value.strip
-  of "doc_dir": section.doc_dir = event.value.strip
-  of "ignore_tags": section.ignore_tags = parse_lines(event.value)
+  case event.key.normalize
+  of "updatehtml": section.update_html = event.value.strip
+  of "docdir": section.doc_dir = event.value.strip
+  of "ignoretags": section.ignore_tags = parse_lines(event.value)
   of "branches": section.branches.parse_lines(event.value)
-  of "doc2_modules": section.doc2_modules = parse_lines(event.value)
-  of "doc_modules": section.doc_modules.parse_lines(event.value)
-  of "rst_files": section.rst_files = parse_lines(event.value)
-  of "link_html": section.link_html = parse_lines(event.value)
+  of "doc2modules": section.doc2_modules = parse_lines(event.value)
+  of "docmodules": section.doc_modules.parse_lines(event.value)
+  of "rstfiles": section.rst_files = parse_lines(event.value)
+  of "linkhtml": section.link_html = parse_lines(event.value)
+  of "multipleindices": section.multiple_indices = true
   else: echo parser.ignore_msg(event)
 
 
@@ -201,12 +211,11 @@ the .ini file.
       s.init()
       if e.section.not_nil:
         s.name = e.section
-    of cfgKeyValuePair:
+    of cfgKeyValuePair, cfgOption:
       if s.name.len < 1:
         echo p.ignore_msg(e)
       else:
         s.add(e, p)
-    of cfgOption: discard
     of cfgError: raise new_exception(EInvalidValue,
       "Error parsing " & filename & ": " & e.msg)
 
