@@ -77,8 +77,8 @@ const
   help_version = "Displays the current version and exists."
 
   param_config = @["-c", "--config"]
-  help_config = "Specify a path to the configuration ini. By default " &
-    "it looks for '" & config_filename & "' in the working directory. " &
+  help_config = "Specify a path to a specific configuration ini or a " &
+    "directory containing a " & config_filename & " file. " &
     "You can't use this switch together with --boot."
 
   param_boot = @["-b", "--boot"]
@@ -215,6 +215,8 @@ proc process_commandline() =
 
   if G.params.options.has_key(param_config[0]):
     G.config_path = G.params.options[param_config[0]].str_val
+    if G.config_path.exists_dir:
+      G.config_path = G.config_path/config_filename
   else:
     G.config_path = ""
 
@@ -232,6 +234,9 @@ proc process_commandline() =
 
   if G.config_path.len > 0 and not G.config_path.exists_file:
     abort "Sorry, '" & G.config_path & "' doesn't seem to be a valid file."
+
+  if not G.boot and not G.config_path.exists_file:
+    abort "Sorry, you need to either boot or specify a config file."
 
   # Patch the global variables to always contain meaningful values.
   if G.config_path.len > 0:
