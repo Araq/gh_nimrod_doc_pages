@@ -653,8 +653,8 @@ proc generate_html_links(ini: Ini_config;
   if PATHS.len < 1: return
 
   # TODO: Here we presume a relative path, should get it out from the html file.
-  PATHS.map_it(
-    """<a href="$1">$2</a>""" % [ini.default.doc_dir/target/it, it])
+  PATHS.map_it("""<a href="$1">$2</a>""" % [
+    ini.default.doc_dir/target/it, it.change_file_ext("")])
   result = "<li>" & target & ": " & PATHS.join(",\n") & "</li>"
 
 
@@ -731,8 +731,8 @@ proc main() =
     finally:
       if not keep_temp: remove_dir(G.config_dir/G.clone_dir)
 
-    #for target in targets.tags: ini.generate_docs(target, false)
-    #for target in targets.branches: ini.generate_docs(target, true)
+    for target in targets.tags: ini.generate_docs(target, false)
+    for target in targets.branches: ini.generate_docs(target, true)
     let html_block = ini.generate_html_list(targets)
     ini.update_html(html_block)
     echo "All done."
