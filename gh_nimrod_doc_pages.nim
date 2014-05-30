@@ -679,6 +679,7 @@ proc generate_html_list(ini: Ini_config;
   # TODO: Sort here targets. Properly.
   branches.sort(system.cmp)
   tags.sort(system.cmp)
+  tags.reverse
 
   var html = ""
   for target in branches: html.add(ini.generate_html_links(dir, target))
