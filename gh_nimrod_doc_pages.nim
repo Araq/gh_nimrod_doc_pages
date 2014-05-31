@@ -366,10 +366,12 @@ proc nimrod(command, src: string; dest = ""): bool =
     (output, exit) = execCmdEx(command)
 
   if exit != 0:
+    echo output
     echo "Error running " & command & " on '" & src & "', compiler aborted."
     return
 
   if dest.len > 0 and not dest.exists_file:
+    echo output
     echo "Error running " & command & " on '" & src & "', html file not found."
     return
   result = true
