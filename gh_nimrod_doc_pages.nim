@@ -689,7 +689,7 @@ proc generate_html_list(ini: Ini_config;
   if html.len > 0:
     result = "<ul>\n" & html & "\n</ul>\n"
   else:
-    result = "Sorry, wasn't able to generate any documentation."
+    result = "Sorry, wasn't able to generate any documentation.\n"
 
 
 proc update_html(ini: Ini_config, html: string) =
