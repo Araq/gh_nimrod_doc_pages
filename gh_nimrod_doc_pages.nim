@@ -1,5 +1,5 @@
 import argument_parser, os, tables, strutils, osproc, inidata, sequtils,
-  global_patches, sets, algorithm, packages/docutils/rstgen
+  global_patches, sets, algorithm, packages/docutils/rstgen, sorting_lists
 
 when defined(windows):
   import windows
@@ -647,7 +647,7 @@ proc generate_html_links(ini: Ini_config;
       assert path.len > 2
       if path.split_file.ext.to_lower == ".html":
         PATHS.add(path[2 .. <path.len])
-    PATHS.sort(system.cmp)
+    PATHS.sort_numerically
 
   result = ""
   if PATHS.len < 1: return
@@ -676,9 +676,8 @@ proc generate_html_list(ini: Ini_config;
       elif name in targets.branches: branches.add(name)
       else: echo "Skipping '" & name & "', not an existing tag/branch."
 
-  # TODO: Sort here targets. Properly.
-  branches.sort(system.cmp)
-  tags.sort(system.cmp)
+  branches.sort_numerically
+  tags.sort_numerically
   tags.reverse
 
   var html = ""
