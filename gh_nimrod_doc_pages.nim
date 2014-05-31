@@ -637,7 +637,12 @@ proc generate_html_links(ini: Ini_config;
   var PATHS: seq[string] = @[] # Relative to final_doc_dir/target.
   if section.link_html.not_nil:
     # Go through the files and figure out which ones are good.
-    PATHS = section.link_html.filter_it(exists_file(final_doc_dir/target/it))
+    for path in section.link_html:
+      let dest = final_doc_dir/target/path
+      if dest.exists_file:
+        PATHS.add(dest)
+      else:
+        echo "WARNING: link_html '" & path & "' not found for " & target
   else:
     # Just grab all HTML files.
     let
