@@ -638,9 +638,12 @@ proc generate_html_links(ini: Ini_config;
   if section.link_html.not_nil:
     # Go through the files and figure out which ones are good.
     for path in section.link_html:
-      let dest = final_doc_dir/target/path
+      let
+        path_ext = add_file_ext(path, "html")
+        dest = final_doc_dir/target/path_ext
+
       if dest.exists_file:
-        PATHS.add(dest)
+        PATHS.add(path_ext)
       else:
         echo "WARNING: link_html '" & path & "' not found for " & target
   else:
