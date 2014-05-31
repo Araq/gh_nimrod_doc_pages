@@ -1,4 +1,4 @@
-import os, re, algorithm, strutils
+import os, re, algorithm, strutils, sequtils
 
 proc cmpSeq*[T](x, y: seq[T]): int =
   # Compare only the minimum amount of elements necessary
@@ -108,7 +108,27 @@ proc test3() =
   sort(thingies, system.cmp[tup])
   echo "After ", thingies
 
+
+proc sort_numerically*(s: var seq[string]) =
+  ## Sorts a sequence considering numbers as values rather than ASCII.
+  var temp = s.map_it(seq[MultiString], it.numericalize)
+  temp.sort(cmpSeq[MultiString])
+  s = temp.map_it(string, $it)
+
+
+proc test4() =
+  var
+    d = @[
+      "num23.change1101.ext", "num3.change1101.ext", "num23.change01.ext",
+      "num23.change0.ext", "num4.change1101.ext", "num4.change1.ext",
+      "num23.change.ext",
+      ]
+
+  d.sort_numerically
+  echo d
+
 when isMainModule:
-  test1()
-  test2()
-  test3()
+  #test1()
+  #test2()
+  #test3()
+  test4()
