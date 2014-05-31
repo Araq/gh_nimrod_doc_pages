@@ -490,7 +490,7 @@ proc collapse_idx(base_dir: string) =
   ## path replacing path separators with underscores. The contents of the idx
   ## files are modified to contain the relative path.
   let base_dir = if base_dir.len < 1: "." else: base_dir
-  for path in base_dir.walk_dir_rec({pcFile, pcLinkToFile, pcDir, pcLinkToDir}):
+  for path in base_dir.dot_walk_dir({pcFile, pcLinkToFile, pcDir, pcLinkToDir}):
     let (dir, name, ext) = path.split_file
     # Ignore files which are not an index.
     if ext != index_ext: continue
@@ -645,7 +645,7 @@ proc generate_html_links(ini: Ini_config;
       current_dir = get_current_dir()
     finally: current_dir.set_current_dir
     base.set_current_dir
-    for path in walk_dir_rec("."):
+    for path in dot_walk_dir("."):
       assert path.len > 2
       if path.split_file.ext.to_lower == ".html":
         PATHS.add(path[2 .. <path.len])
