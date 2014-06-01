@@ -186,9 +186,9 @@ proc gather_git_info() =
         continue
       # Found line, try to parse info.
       for prefix in [git_ssh_prefix, git_https_prefix]:
-        var pos = line.find(git_ssh_prefix)
+        var pos = line.find(prefix)
         if pos > 0: # Found the beginning of the pattern.
-          pos += git_ssh_prefix.len
+          pos += prefix.len
           let split = line.find('/', pos)
           if split > 0: # Found the username/project separator.
             let finish = line.find(git_suffix, split)
