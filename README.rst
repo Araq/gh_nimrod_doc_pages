@@ -55,6 +55,7 @@ Command line switches
 ---------------------
 
 Usage parameters:
+
 -h, --help            Displays commandline help and exits.
 -v, --version         Displays the current version and exists.
 -c, --config STRING   Specify a path to a specific configuration ini or a directory containing a gh_nimrod_doc_pages.ini file. You can't use this switch together with --boot.
