@@ -1,8 +1,15 @@
 # Global patterns
+*.exe
 *.swp
 .DS_Store
 nimcache/
 
 # Full paths.
 /README.html
+/docs/changes.html
+/docs/release_steps.html
+/gh_nimrod_doc_pages
+/inidata
+/license.html
 /nakefile
+/sorting_lists
