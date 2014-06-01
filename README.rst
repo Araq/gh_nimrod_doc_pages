@@ -82,6 +82,30 @@ populate it:
 Setting up a project with an existing gh-pages branch
 -----------------------------------------------------
 
+If you have an existing ``gh-pages`` branch the steps change slightly to
+accommodate your existing website. The steps could be something like this:
+
+1. ``$ git checkout gh-pages`` to switch to your website branch.
+2. ``$ gh_nimrod_doc_pages -b`` to create template files. Files which already
+   exist won't be overwritten.
+3. ``$ git status`` will show you the new template files, remove everything
+   except the ``gh_nimrod_doc_pages.ini`` file. Or copy the ``.ini`` somewhere
+   else and purge and checkout again the branch. The purpose is to get rid of
+   the template debris.
+4. ``$ gh_nimrod_doc_pages -c .`` will tell you if your HTML file is correctly
+   set up, explaining what markers have to be added to it. You need a pair of
+   lines, everything inside will be handled by gh_nimrod_doc_pages.
+5. After a few attempts you should have your HTML file updated and a new
+   documentation directory generated. Commit and push the changes.
+
+
+Updating generated docs in the future
+-------------------------------------
+
+Once you have set up ``gh_nimrod_doc_pages`` updating documentation is very
+simple: you switch to your ``gh-pages`` branch, run ``gh_nimrod_doc_pages``,
+review the changes and commit/push.
+
 
 Typical gotchas
 ---------------
@@ -91,7 +115,7 @@ Typical gotchas
   default parameters won't do much. Modify the ``branches`` parameter in the
   ``gh_nimrod_doc_pages.ini`` file to make it work. Setting that to ``master``
   usually does the trick, but it depends on how you use branches and for what.
-* If during the generation of documentation from ``.nim`` files in a project
+* During the generation of documentation from ``.nim`` files in a project
   where there are many ``.nim`` files with specific nimrod configuration
   parameters, the ``doc2`` command is likely not seeing those because it
   doesn't change directory to those files. For the moment you have to disable
