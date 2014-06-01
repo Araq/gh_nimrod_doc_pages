@@ -9,6 +9,16 @@ create a small ``.ini`` configuration file with some parameters,
 ``gh_nimrod_doc_pages`` will read this file and produce HTML files from all
 your ``.rst`` and ``.nim`` files for any tags and branches you want.
 
+Here is a small sample of websites using ``gh_nimrod_doc_pages`` and their
+``gh-pages`` branch:
+
+* http://gradha.github.io/argument_parser/ (`gh-pages
+  <https://github.com/gradha/argument_parser/tree/gh-pages>`__).
+* http://gradha.github.io/nimrod-ouroboros/ (`gh-pages
+  <https://github.com/gradha/nimrod-ouroboros/tree/gh-pages>`__).
+* http://gradha.github.io/seohtracker-logic/ (`gh-pages
+  <https://github.com/gradha/seohtracker-logic/tree/gh-pages>`__).
+
 
 Changes
 =======
