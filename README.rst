@@ -13,11 +13,11 @@ Here is a small sample of websites using ``gh_nimrod_doc_pages`` and their
 ``gh-pages`` branch:
 
 * http://gradha.github.io/argument_parser/ (`gh-pages
-  <https://github.com/gradha/argument_parser/tree/gh-pages>`__).
+  <https://github.com/gradha/argument_parser/tree/gh-pages>`_).
 * http://gradha.github.io/nimrod-ouroboros/ (`gh-pages
-  <https://github.com/gradha/nimrod-ouroboros/tree/gh-pages>`__).
+  <https://github.com/gradha/nimrod-ouroboros/tree/gh-pages>`_).
 * http://gradha.github.io/seohtracker-logic/ (`gh-pages
-  <https://github.com/gradha/seohtracker-logic/tree/gh-pages>`__).
+  <https://github.com/gradha/seohtracker-logic/tree/gh-pages>`_).
 
 
 Changes
