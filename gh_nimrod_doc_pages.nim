@@ -1,5 +1,6 @@
 import argument_parser, os, tables, strutils, osproc, inidata, sequtils,
-  global_patches, sets, algorithm, packages/docutils/rstgen, sorting_lists
+  global_patches, sets, algorithm, packages/docutils/rstgen, sorting_lists,
+  midnight_dynamite
 
 when defined(windows):
   import windows
@@ -25,6 +26,7 @@ type
     github_project: string ## Empty string or GitHub project name.
     clone_dir: string ## Path to the temporary git clones directory. \
     ## This path is relative to config_dir.
+    md_params: md_params ## Markdown render configuration.
 
 
 var G: Global
@@ -212,6 +214,7 @@ proc process_commandline() =
   ## It also initializes fields like `git_exe` or `nimrod_exe`.
   G.git_exe = "git".find_exe
   G.nimrod_exe = "nimrod".find_exe
+  G.md_params.init
 
   var PARAMS: seq[Tparameter_specification] = @[]
   PARAMS.add(new_parameter_specification(PK_HELP,
@@ -377,6 +380,19 @@ proc nimrod(command, src: string; dest = ""): bool =
   result = true
 
 
+proc md(input_md: string): string =
+  ## Runs `input_md` through the default Midnight Dynamite conversion.
+  ##
+  ## Returns the empty string or the relative path to the generated file.
+  let dest = input_md.change_file_ext("html")
+  dest.remove_file
+  G.md_params.render_file(input_md, dest)
+  if dest.exists_file:
+    result = dest
+  else:
+    result = ""
+
+
 proc rst(input_rst: string): string =
   ## Runs `input_rst` through Nimrod's rst2html command.
   ##
@@ -533,6 +549,9 @@ proc generate_docs(s: Section; src_dir: string): seq[string] =
   # Process specified doc files.
   files = s.doc_modules
   loop_files(doc1)
+  # Markdown files.
+  files = if s.md_files.is_nil: scan_files(".md") else: s.md_files
+  loop_files(md)
   # And finally rst files.
   files = if s.rst_files.is_nil: scan_files(".rst") else: s.rst_files
   loop_files(rst)
