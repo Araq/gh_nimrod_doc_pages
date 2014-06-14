@@ -11,6 +11,7 @@ type
     multiple_indices*: bool ## When true, the user wants multiple theindex.html.
     doc2_modules*: seq[string] ## Nil or files to run through doc2 command.
     doc_modules*: seq[string] ## Not nil. Files to run through doc command.
+    md_files*: seq[string] ## Nil or files to run through md library.
     rst_files*: seq[string] ## Nil or files to be rested.
     link_html*: seq[string] ## Nil or files to be linked in the index.
 
@@ -32,6 +33,7 @@ proc init(X: var Section) =
   X.branches = @[]
   X.doc2_modules = nil
   X.doc_modules = @[]
+  X.md_files = nil
   X.rst_files = nil
   X.link_html = nil
 
@@ -125,6 +127,8 @@ proc combine*(ini: Ini_config; target: string): Section =
     result.doc_modules = ini.default.doc_modules
   if result.doc2_modules.is_nil and ini.default.doc2_modules.not_nil:
     result.doc2_modules = ini.default.doc2_modules
+  if result.md_files.is_nil and ini.default.md_files.not_nil:
+    result.md_files = ini.default.md_files
   if result.rst_files.is_nil and ini.default.rst_files.not_nil:
     result.rst_files = ini.default.rst_files
   if result.link_html.is_nil and ini.default.link_html.not_nil:
@@ -170,6 +174,7 @@ proc add(section: var Section; event: TCfgEvent; parser: TCfgParser) =
   of "ignoretags": section.ignore_tags = parse_lines(event.value)
   of "branches": section.branches.parse_lines(event.value)
   of "doc2modules": section.doc2_modules = parse_lines(event.value)
+  of "mdfiles": section.md_files = parse_lines(event.value)
   of "docmodules": section.doc_modules.parse_lines(event.value)
   of "rstfiles": section.rst_files = parse_lines(event.value)
   of "linkhtml": section.link_html = parse_lines(event.value)
