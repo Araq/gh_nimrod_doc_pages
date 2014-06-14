@@ -7,7 +7,7 @@ and maintain a `GitHub Pages website <https://pages.github.com>`_ using the
 documentation of their `Nimrod <http://nimrod-lang.org>`_ source code. Once you
 create a small ``.ini`` configuration file with some parameters,
 ``gh_nimrod_doc_pages`` will read this file and produce HTML files from all
-your ``.rst`` and ``.nim`` files for any tags and branches you want.
+your ``.rst``, ``.md`` and ``.nim`` files for any tags and branches you want.
 
 Here is a small sample of websites using ``gh_nimrod_doc_pages`` and their
 ``gh-pages`` branch:
