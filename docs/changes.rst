@@ -12,6 +12,8 @@ v0.2.1 ????-??-??
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/5>`_.
 * `Added Babel stable installation
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/4>`_.
+* `Patched local .rst/.md links in generated HTML
+  <https://github.com/gradha/gh_nimrod_doc_pages/issues/17>`_.
 
 v0.2.0 2014-06-01
 -----------------
