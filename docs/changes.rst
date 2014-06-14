@@ -8,7 +8,8 @@ Changes log for `gh_nimrod_doc_pages
 v0.2.1 ????-??-??
 -----------------
 
-* Nothing yet.
+* `Added markdown rendering support
+  <https://github.com/gradha/gh_nimrod_doc_pages/issues/5>`_.
 
 v0.2.0 2014-06-01
 -----------------
