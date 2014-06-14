@@ -10,6 +10,8 @@ v0.2.1 ????-??-??
 
 * `Added markdown rendering support
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/5>`_.
+* `Added Babel stable installation
+  <https://github.com/gradha/gh_nimrod_doc_pages/issues/4>`_.
 
 v0.2.0 2014-06-01
 -----------------
