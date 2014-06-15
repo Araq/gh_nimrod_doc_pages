@@ -1,6 +1,10 @@
+## gh_nimrod_doc_pages main module.
+##
+## For project information see https://github.com/gradha/gh_nimrod_doc_pages.
+
 import argument_parser, os, tables, strutils, osproc, inidata, sequtils,
   global_patches, sets, algorithm, packages/docutils/rstgen, sorting_lists,
-  midnight_dynamite, htmlparser, xmltree, strtabs
+  midnight_dynamite, html_support
 
 when defined(windows):
   import windows
@@ -378,36 +382,6 @@ proc nimrod(command, src: string; dest = ""): bool =
     echo "Error running " & command & " on '" & src & "', html file not found."
     return
   result = true
-
-
-proc post_process_html_local_links(filename: string) =
-  ## Changes href attributes to point to .html versions of local files.
-  ##
-  ## This allows authors to leave local links with the .rst/.md/.txt extension,
-  ## which is the correct thing, and still have valid links in the generated
-  ## docs. Run this after all the HTML files have been created, since this
-  ## looks for actual local files to avoid 404 mistakes.
-  ##
-  ## The file won't be updated if no local links are updated.
-  let html = filename.load_html
-  var DID_CHANGE: bool
-
-  for a in html.find_all("a"):
-    let href = a.attrs["href"]
-    if not href.is_nil:
-      let (dir, name, ext) = href.split_file
-      case ext.to_lower
-      of ".rst", ".md", ".txt":
-        let
-          rel_path = href.change_file_ext("html")
-          test_path = filename.split_file.dir/rel_path
-        if test_path.exists_file:
-          a.attrs["href"] = rel_path
-          DID_CHANGE = true
-
-  if DID_CHANGE:
-    echo "Mangling local links in ", filename
-    filename.write_file($html)
 
 
 proc md(input_md: string): string =
