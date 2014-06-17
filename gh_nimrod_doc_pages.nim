@@ -1,6 +1,10 @@
+## gh_nimrod_doc_pages main module.
+##
+## For project information see https://github.com/gradha/gh_nimrod_doc_pages.
+
 import argument_parser, os, tables, strutils, osproc, inidata, sequtils,
   global_patches, sets, algorithm, packages/docutils/rstgen, sorting_lists,
-  midnight_dynamite
+  midnight_dynamite, html_support
 
 when defined(windows):
   import windows
@@ -555,6 +559,10 @@ proc generate_docs(s: Section; src_dir: string): seq[string] =
   # And finally rst files.
   files = if s.rst_files.is_nil: scan_files(".rst") else: s.rst_files
   loop_files(rst)
+
+  # Post process links of generated html files.
+  for html_file in scan_files(".html"):
+    html_file.post_process_html_local_links
 
   # Generate theindex.html from idx files.
   let dirs = result.extract_unique_directories(not s.multiple_indices)

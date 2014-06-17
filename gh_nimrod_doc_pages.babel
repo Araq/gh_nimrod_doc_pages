@@ -10,6 +10,7 @@ InstallFiles = """
 
 gh_nimrod_doc_pages.nim
 global_patches.nim
+html_support.nim
 inidata.nim
 sorting_lists.nim
 
