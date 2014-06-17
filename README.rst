@@ -23,7 +23,7 @@ Here is a small sample of websites using ``gh_nimrod_doc_pages`` and their
 Changes
 =======
 
-This is development version 0.2.1. For a list of changes see the
+This is stable version 0.2.2. For a list of changes see the
 `docs/changes.rst file <docs/changes.rst>`_.
 
 
