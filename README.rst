@@ -62,7 +62,7 @@ If you don't mind downloading the git repo every time you can also use Babel to
 install the latest development version::
 
     $ babel update
-    $ babel install -y gh_nimrod_doc_pages
+    $ babel install -y gh_nimrod_doc_pages#HEAD
 
 
 Usage
