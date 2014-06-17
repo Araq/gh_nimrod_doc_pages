@@ -670,9 +670,18 @@ proc generate_html_links(ini: Ini_config;
         dest = final_doc_dir/target/path_ext
 
       if dest.exists_file:
-        PATHS.add(path_ext)
+        try:
+          let expanded = dest.expand_filename
+          if expanded.ends_with(path_ext):
+            PATHS.add(path_ext)
+          else:
+            echo "WARNING: link_html '", path,
+              "' resolves to a path with different case => ", expanded, "."
+        except EOS:
+          echo "WARNING: link_html '", path,
+            "' doesn't seem to be valid a valid file."
       else:
-        echo "WARNING: link_html '" & path & "' not found for " & target
+        echo "WARNING: link_html '", path, "' not found for ", target, "."
   else:
     # Just grab all HTML files.
     let
