@@ -5,6 +5,11 @@ gh_nimrod_doc_pages changes log
 Changes log for `gh_nimrod_doc_pages
 <https://github.com/gradha/gh_nimrod_doc_pages/>`_.
 
+v0.2.3 ????-??-??
+-----------------
+
+* Nothing yet.
+
 v0.2.2 2014-06-18
 -----------------
 

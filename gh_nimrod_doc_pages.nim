@@ -63,10 +63,10 @@ const
   name = "gh_nimrod_doc_pages"
   config_filename = name & ".ini"
 
-  version_str* = name & "-0.2.2" ## Program version as a string. \
+  version_str* = name & "-0.2.3" ## Program version as a string. \
   ## The format is ``string-digit(.digit)*``.
 
-  version_int* = (major: 0, minor: 2, maintenance: 2) ## \
+  version_int* = (major: 0, minor: 2, maintenance: 3) ## \
   ## Program version as an integer tuple.
   ##
   ## Major version changes mean significant new features or a break in
