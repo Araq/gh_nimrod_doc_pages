@@ -3,7 +3,7 @@ What to do for a new public release of gh_nimrod_doc_pages?
 ===========================================================
 
 * Create new milestone with version number (``vXXX``) at
-  https://github.com/gradha/gh_nimrod_doc_pages.
+  https://github.com/gradha/gh_nimrod_doc_pages/issues/milestones.
 * Create new dummy issue `Release versionname` and assign to that milestone.
 * ``git flow release start versionname`` (versionname without v).
 * Update version numbers:
@@ -40,13 +40,22 @@ What to do for a new public release of gh_nimrod_doc_pages?
     <../gh_nimrod_doc_pages.nim>`_.
   * Modify `gh_nimrod_doc_pages.babel
     <../gh_nimrod_doc_pages.babel>`_.
-  * Add to `docs/CHANGES.rst <CHANGES.rst>`_ development version with unknown
+  * Add to `docs/changes.rst <changes.rst>`_ development version with unknown
     date.
 
 * ``git commit -av`` into ``master`` with *Bumps version numbers for
   development version. Refs #release issue*.
-* ``git push origin master stable --tags``.
+
+* Regenerate static website.
+
+  * ``git checkout gh-pages`` to switch to ``gh-pages``.
+  * ``rm `git ls-files -o` && rm -Rf docs`` to purge files from other branches
+    and force regeneration of all docs, even tags.
+  * ``gh_nimrod_doc_pages -c . && git add . && git commit``. Tag with
+    `Regenerates website. Refs #release_issue`.
+
+* ``git push origin master stable gh-pages --tags``.
 * Close the dummy release issue.
-* Announce at
-  `http://forum.nimrod-lang.org/ <http://forum.nimrod-lang.org/>`_.
+* Announce at `http://forum.nimrod-lang.org/t/460
+  <http://forum.nimrod-lang.org/t/460>`_.
 * Close the milestone on github.

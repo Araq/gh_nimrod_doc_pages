@@ -1,5 +1,10 @@
+## gh_nimrod_doc_pages main module.
+##
+## For project information see https://github.com/gradha/gh_nimrod_doc_pages.
+
 import argument_parser, os, tables, strutils, osproc, inidata, sequtils,
-  global_patches, sets, algorithm, packages/docutils/rstgen, sorting_lists
+  global_patches, sets, algorithm, packages/docutils/rstgen, sorting_lists,
+  midnight_dynamite, html_support
 
 when defined(windows):
   import windows
@@ -25,6 +30,7 @@ type
     github_project: string ## Empty string or GitHub project name.
     clone_dir: string ## Path to the temporary git clones directory. \
     ## This path is relative to config_dir.
+    md_params: md_params ## Markdown render configuration.
 
 
 var G: Global
@@ -57,10 +63,10 @@ const
   name = "gh_nimrod_doc_pages"
   config_filename = name & ".ini"
 
-  version_str* = name & "-0.2.0" ## Program version as a string. \
+  version_str* = name & "-0.2.2" ## Program version as a string. \
   ## The format is ``string-digit(.digit)*``.
 
-  version_int* = (major: 0, minor: 2, maintenance: 0) ## \
+  version_int* = (major: 0, minor: 2, maintenance: 2) ## \
   ## Program version as an integer tuple.
   ##
   ## Major version changes mean significant new features or a break in
@@ -212,6 +218,7 @@ proc process_commandline() =
   ## It also initializes fields like `git_exe` or `nimrod_exe`.
   G.git_exe = "git".find_exe
   G.nimrod_exe = "nimrod".find_exe
+  G.md_params.init
 
   var PARAMS: seq[Tparameter_specification] = @[]
   PARAMS.add(new_parameter_specification(PK_HELP,
@@ -377,6 +384,19 @@ proc nimrod(command, src: string; dest = ""): bool =
   result = true
 
 
+proc md(input_md: string): string =
+  ## Runs `input_md` through the default Midnight Dynamite conversion.
+  ##
+  ## Returns the empty string or the relative path to the generated file.
+  let dest = input_md.change_file_ext("html")
+  dest.remove_file
+  G.md_params.render_file(input_md, dest)
+  if dest.exists_file:
+    result = dest
+  else:
+    result = ""
+
+
 proc rst(input_rst: string): string =
   ## Runs `input_rst` through Nimrod's rst2html command.
   ##
@@ -533,9 +553,16 @@ proc generate_docs(s: Section; src_dir: string): seq[string] =
   # Process specified doc files.
   files = s.doc_modules
   loop_files(doc1)
+  # Markdown files.
+  files = if s.md_files.is_nil: scan_files(".md") else: s.md_files
+  loop_files(md)
   # And finally rst files.
   files = if s.rst_files.is_nil: scan_files(".rst") else: s.rst_files
   loop_files(rst)
+
+  # Post process links of generated html files.
+  for html_file in scan_files(".html"):
+    html_file.post_process_html_local_links
 
   # Generate theindex.html from idx files.
   let dirs = result.extract_unique_directories(not s.multiple_indices)
@@ -643,9 +670,18 @@ proc generate_html_links(ini: Ini_config;
         dest = final_doc_dir/target/path_ext
 
       if dest.exists_file:
-        PATHS.add(path_ext)
+        try:
+          let expanded = dest.expand_filename
+          if expanded.ends_with(path_ext):
+            PATHS.add(path_ext)
+          else:
+            echo "WARNING: link_html '", path,
+              "' resolves to a path with different case => ", expanded, "."
+        except EOS:
+          echo "WARNING: link_html '", path,
+            "' doesn't seem to be valid a valid file."
       else:
-        echo "WARNING: link_html '" & path & "' not found for " & target
+        echo "WARNING: link_html '", path, "' not found for ", target, "."
   else:
     # Just grab all HTML files.
     let

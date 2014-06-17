@@ -1,6 +1,6 @@
 [Package]
 name         = "gh_nimrod_doc_pages"
-version      = "0.2.0"
+version      = "0.2.2"
 author       = "Grzegorz Adam Hankiewicz"
 description  = "Generates a GitHub documentation website for Nimrod projects."
 license      = "MIT"
@@ -10,6 +10,7 @@ InstallFiles = """
 
 gh_nimrod_doc_pages.nim
 global_patches.nim
+html_support.nim
 inidata.nim
 sorting_lists.nim
 
@@ -20,4 +21,4 @@ boot_html_template
 """
 
 [Deps]
-Requires: "argument_parser >= 0.2.0"
+Requires: "argument_parser >= 0.2.0, midnight_dynamite >= 0.2.0"

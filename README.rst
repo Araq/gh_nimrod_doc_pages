@@ -1,13 +1,13 @@
-===========================
-gh_nimrod_doc_pages: README
-===========================
+==========================
+gh_nimrod_doc_pages readme
+==========================
 
 **gh_nimrod_doc_pages** is a small helper for developers who want to generate
 and maintain a `GitHub Pages website <https://pages.github.com>`_ using the
 documentation of their `Nimrod <http://nimrod-lang.org>`_ source code. Once you
 create a small ``.ini`` configuration file with some parameters,
 ``gh_nimrod_doc_pages`` will read this file and produce HTML files from all
-your ``.rst`` and ``.nim`` files for any tags and branches you want.
+your ``.rst``, ``.md`` and ``.nim`` files for any tags and branches you want.
 
 Here is a small sample of websites using ``gh_nimrod_doc_pages`` and their
 ``gh-pages`` branch:
@@ -23,7 +23,7 @@ Here is a small sample of websites using ``gh_nimrod_doc_pages`` and their
 Changes
 =======
 
-This is stable version 0.2.0. For a list of changes see the
+This is stable version 0.2.2. For a list of changes see the
 `docs/changes.rst file <docs/changes.rst>`_.
 
 
@@ -33,19 +33,36 @@ License
 `MIT license <license.rst>`_.
 
 
-Installing from source code
-===========================
+Installing the binary
+=====================
+
+Stable version
+--------------
+
+Install the `Nimrod compiler <http://nimrod-lang.org>`_. Then use `Nimrod's
+Babel package manager <https://github.com/nimrod-code/babel>`_ to install::
+
+    $ babel update
+    $ babel install gh_nimrod_doc_pages
+    $ gh_nimrod_doc_pages -v
+
 
 Development version
 -------------------
 
 Install the `Nimrod compiler <http://nimrod-lang.org>`_. Then use `Nimrod's
-babel package manager <https://github.com/nimrod-code/babel>`_ to install
+Babel package manager <https://github.com/nimrod-code/babel>`_ to install
 locally the github checkout::
 
     $ git clone --recursive https://github.com/gradha/gh_nimrod_doc_pages
     $ cd gh_nimrod_doc_pages
     $ babel install -y
+
+If you don't mind downloading the git repo every time you can also use Babel to
+install the latest development version::
+
+    $ babel update
+    $ babel install -y gh_nimrod_doc_pages
 
 
 Usage
