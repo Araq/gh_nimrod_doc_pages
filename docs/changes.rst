@@ -14,6 +14,8 @@ v0.2.1 ????-??-??
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/4>`_.
 * `Patched local .rst/.md links in generated HTML
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/17>`_.
+* `Fixed boot template title
+  <https://github.com/gradha/gh_nimrod_doc_pages/issues/18>`_.
 
 v0.2.0 2014-06-01
 -----------------
