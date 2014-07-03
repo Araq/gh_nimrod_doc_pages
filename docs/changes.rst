@@ -8,7 +8,8 @@ Changes log for `gh_nimrod_doc_pages
 v0.2.3 ????-??-??
 -----------------
 
-* Nothing yet.
+* `Recognises .markdown extension too
+  <https://github.com/gradha/gh_nimrod_doc_pages/issues/26>`_.
 
 v0.2.2 2014-06-18
 -----------------
