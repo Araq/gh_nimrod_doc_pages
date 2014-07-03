@@ -1,4 +1,5 @@
-import htmlparser, xmltree, strtabs, os, strutils, global_patches, streams
+import htmlparser, xmltree, strtabs, os, strutils, global_patches, streams,
+  globals_for_gh, macros
 
 ## gh_nimrod_doc_pages html support files.
 ##
@@ -34,7 +35,8 @@ proc post_process_html_local_links(html: PXmlNode, filename: string): bool =
     if not href.is_nil:
       let (dir, name, ext) = href.split_file
       case ext.to_lower
-      of ".rst", ".md", ".markdown", ".txt":
+      of ".rst", md_extensions[0], md_extensions[1], ".txt":
+        when md_extensions.len != 2: {.fatal: "Missing case checks".}
         let
           rel_path = href.change_file_ext("html")
           test_path = filename.split_file.dir/rel_path
@@ -60,7 +62,8 @@ proc find_local_links(html: PXmlNode, filename: string): seq[pair] =
     if not href.is_nil:
       let (dir, name, ext) = href.split_file
       case ext.to_lower
-      of ".rst", ".md", ".markdown", ".txt":
+      of ".rst", md_extensions[0], md_extensions[1], ".txt":
+        when md_extensions.len != 2: {.fatal: "Missing case checks".}
         let
           rel_path = href.change_file_ext("html")
           test_path = filename.split_file.dir/rel_path

@@ -4,7 +4,7 @@
 
 import argument_parser, os, tables, strutils, osproc, inidata, sequtils,
   global_patches, sets, algorithm, packages/docutils/rstgen, sorting_lists,
-  midnight_dynamite, html_support
+  midnight_dynamite, html_support, globals_for_gh
 
 when defined(windows):
   import windows
@@ -124,9 +124,6 @@ const
   api_list_end = "gh_nimrod_doc_pages_api_list_end" ## Html end marker.
 
   default_scan_files_dir = "."
-  md_extensions = [".md", ".markdown"]
-  rst_extensions = [".rst"]
-  html_extensions = [".html", ".htm"]
 
 
 proc update_html(ini: Ini_config): string =
