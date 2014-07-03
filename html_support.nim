@@ -34,7 +34,7 @@ proc post_process_html_local_links(html: PXmlNode, filename: string): bool =
     if not href.is_nil:
       let (dir, name, ext) = href.split_file
       case ext.to_lower
-      of ".rst", ".md", ".txt":
+      of ".rst", ".md", ".markdown", ".txt":
         let
           rel_path = href.change_file_ext("html")
           test_path = filename.split_file.dir/rel_path
@@ -60,7 +60,7 @@ proc find_local_links(html: PXmlNode, filename: string): seq[pair] =
     if not href.is_nil:
       let (dir, name, ext) = href.split_file
       case ext.to_lower
-      of ".rst", ".md", ".txt":
+      of ".rst", ".md", ".markdown", ".txt":
         let
           rel_path = href.change_file_ext("html")
           test_path = filename.split_file.dir/rel_path

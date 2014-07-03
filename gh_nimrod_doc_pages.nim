@@ -123,6 +123,11 @@ const
   api_list_start = "gh_nimrod_doc_pages_api_list_start" ## Html start marker.
   api_list_end = "gh_nimrod_doc_pages_api_list_end" ## Html end marker.
 
+  default_scan_files_dir = "."
+  md_extensions = [".md", ".markdown"]
+  rst_extensions = [".rst"]
+  html_extensions = [".html", ".htm"]
+
 
 proc update_html(ini: Ini_config): string =
   ## Returns a properly fixed update_html path considering our globals.
@@ -332,12 +337,15 @@ proc obtain_targets_to_work_on(ini: Ini_config):
       available_branches.contains(it))
 
 
-proc scan_files(extension: string, dir = "."): seq[string] =
+proc scan_files(extensions: openarray[string],
+    dir = default_scan_files_dir): seq[string] =
   ## Returns the relative paths to files found with the specified extension.
+  ##
+  ## Pass the extensions lower case. All extensions have to start with a dot.
   ##
   ## Hmm... seems like making this an iterator which yields the path crashes
   ## the generated runtime code...
-  assert extension.not_nil and extension[0] == '.'
+  for ext in extensions: assert ext[0] == '.'
   result = @[]
 
   for kind, path in dir.walk_dir:
@@ -348,11 +356,19 @@ proc scan_files(extension: string, dir = "."): seq[string] =
       continue
     case kind
     of pcFile, pcLinkToFile:
-      if good_path.split_file.ext == extension:
-        result.add(good_path)
+      let good_ext = good_path.split_file.ext.to_lower
+      for extension in extensions:
+        if good_ext == extension:
+          result.add(good_path)
+          break
     of pcDir, pcLinkToDir:
-      for recursive in extension.scan_files(path):
+      for recursive in extensions.scan_files(path):
         result.add(recursive)
+
+
+proc scan_files(extension: string, dir = default_scan_files_dir): seq[string] =
+  ## Wrapper around the version accepting a sequence.
+  result = scan_files([extension], dir)
 
 
 proc nimrod(command, src: string; dest = ""): bool =
@@ -554,14 +570,14 @@ proc generate_docs(s: Section; src_dir: string): seq[string] =
   files = s.doc_modules
   loop_files(doc1)
   # Markdown files.
-  files = if s.md_files.is_nil: scan_files(".md") else: s.md_files
+  files = if s.md_files.is_nil: md_extensions.scan_files else: s.md_files
   loop_files(md)
   # And finally rst files.
-  files = if s.rst_files.is_nil: scan_files(".rst") else: s.rst_files
+  files = if s.rst_files.is_nil: rst_extensions.scan_files else: s.rst_files
   loop_files(rst)
 
   # Post process links of generated html files.
-  for html_file in scan_files(".html"):
+  for html_file in html_extensions.scan_files:
     html_file.post_process_html_local_links
 
   # Generate theindex.html from idx files.
