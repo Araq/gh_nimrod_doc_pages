@@ -108,7 +108,7 @@ proc find_href(s: string; pos: int; substr: string): int =
   ## length an `href` attribute is found.
   result = pos
   while result >= 0:
-    result = s.find(substr, pos)
+    result = s.find(substr, result)
     if result > 0:
       # Make sure in the previous substring there is an href=
       let prefix = s[max(0, result - 8) .. result].to_lower
