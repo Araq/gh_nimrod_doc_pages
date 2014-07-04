@@ -22,4 +22,4 @@ boot_html_template
 """
 
 [Deps]
-Requires: "argument_parser >= 0.2.0, midnight_dynamite >= 0.2.0"
+Requires: "argument_parser >= 0.2.0, midnight_dynamite >= 0.2.3"
