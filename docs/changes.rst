@@ -12,6 +12,8 @@ v0.2.3 ????-??-??
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/26>`_.
 * `Fix infinite loop post processing html links
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/27>`_.
+* `Support markdown generation with fenced blocks extension
+  <https://github.com/gradha/gh_nimrod_doc_pages/issues/28>`_.
 
 v0.2.2 2014-06-18
 -----------------
