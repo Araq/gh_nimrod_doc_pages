@@ -19,6 +19,8 @@ Here is a small sample of websites using ``gh_nimrod_doc_pages`` and their
 * http://gradha.github.io/seohtracker-logic/ (`gh-pages
   <https://github.com/gradha/seohtracker-logic/tree/gh-pages>`_).
 
+A longer list can be found at http://gradha.github.io.
+
 
 Changes
 =======
@@ -62,7 +64,7 @@ If you don't mind downloading the git repo every time you can also use Babel to
 install the latest development version::
 
     $ babel update
-    $ babel install -y gh_nimrod_doc_pages#HEAD
+    $ babel install -y gh_nimrod_doc_pages@#HEAD
 
 
 Usage
