@@ -1,4 +1,5 @@
-import parsecfg, strutils, streams, tables, sequtils, algorithm, global_patches
+import parsecfg, strutils, streams, tables, sequtils, algorithm,
+  bb_system
 
 type
   Section* = object ## Contains the parameters for a section in the .ini file.

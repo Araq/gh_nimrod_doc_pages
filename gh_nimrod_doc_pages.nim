@@ -2,8 +2,8 @@
 ##
 ## For project information see https://github.com/gradha/gh_nimrod_doc_pages.
 
-import argument_parser, os, tables, strutils, osproc, inidata, sequtils,
-  global_patches, sets, algorithm, packages/docutils/rstgen, sorting_lists,
+import argument_parser, bb_os, tables, strutils, osproc, inidata, sequtils,
+  bb_system, sets, algorithm, packages/docutils/rstgen, sorting_lists,
   midnight_dynamite, html_support, globals_for_gh
 
 when defined(windows):
@@ -522,8 +522,10 @@ proc collapse_idx(base_dir: string) =
   ## The files are collapsed to the base directory using the semi full relative
   ## path replacing path separators with underscores. The contents of the idx
   ## files are modified to contain the relative path.
-  let base_dir = if base_dir.len < 1: "." else: base_dir
-  for path in base_dir.dot_walk_dir({pcFile, pcLinkToFile, pcDir, pcLinkToDir}):
+  let
+    base_dir = if base_dir.len < 1: "." else: base_dir
+    filter = {pcFile, pcLinkToFile, pcDir, pcLinkToDir}
+  for path in base_dir.dot_walk_dir_rec(filter):
     let (dir, name, ext) = path.split_file
     # Ignore files which are not an index.
     if ext != index_ext: continue
@@ -702,7 +704,7 @@ proc generate_html_links(ini: Ini_config;
       current_dir = get_current_dir()
     finally: current_dir.set_current_dir
     base.set_current_dir
-    for path in dot_walk_dir("."):
+    for path in dot_walk_dir_rec("."):
       assert path.len > 2
       if path.split_file.ext.to_lower == ".html":
         PATHS.add(path[2 .. <path.len])
