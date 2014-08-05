@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>gh_nimrod_doc_pages: README</title>
+<title>gh_nimrod_doc_pages readme</title>
 <style type="text/css">
 
 span.DecNumber {color: blue}
@@ -238,23 +238,34 @@ a.reference:hover {color: #E00000;background-color: #ffff00;display: margin;
 </head>
 <body>
 <div class="document" id="documentId">
-<h1 class="title">gh_nimrod_doc_pages: README</h1>
-<p><strong>gh_nimrod_doc_pages</strong> is a small helper for developers who want to generate and maintain a <a class="reference external" href="https://pages.github.com">GitHub Pages website</a> using the documentation of their <a class="reference external" href="http://nimrod-lang.org">Nimrod</a> source code. Once you create a small <tt class="docutils literal"><span class="pre">.ini</span></tt> configuration file with some parameters, <tt class="docutils literal"><span class="pre">gh_nimrod_doc_pages</span></tt> will read this file and produce HTML files from all your <tt class="docutils literal"><span class="pre">.rst</span></tt> and <tt class="docutils literal"><span class="pre">.nim</span></tt> files for any tags and branches you want.</p>
+<h1 class="title">gh_nimrod_doc_pages readme</h1>
+<p><strong>gh_nimrod_doc_pages</strong> is a small helper for developers who want to generate and maintain a <a class="reference external" href="https://pages.github.com">GitHub Pages website</a> using the documentation of their <a class="reference external" href="http://nimrod-lang.org">Nimrod</a> source code. Once you create a small <tt class="docutils literal"><span class="pre">.ini</span></tt> configuration file with some parameters, <tt class="docutils literal"><span class="pre">gh_nimrod_doc_pages</span></tt> will read this file and produce HTML files from all your <tt class="docutils literal"><span class="pre">.rst</span></tt>, <tt class="docutils literal"><span class="pre">.md</span></tt> and <tt class="docutils literal"><span class="pre">.nim</span></tt> files for any tags and branches you want.</p>
 <p>Here is a small sample of websites using <tt class="docutils literal"><span class="pre">gh_nimrod_doc_pages</span></tt> and their <tt class="docutils literal"><span class="pre">gh-pages</span></tt> branch:</p>
-<ul class="simple"><li><a class="reference external" href="http://gradha.github.io/argument_parser">http://gradha.github.io/argument_parser</a>/ (<a class="reference external" href="https://github.com/gradha/argument_parser/tree/gh-pages">gh-pages</a>).</li>
-<li><a class="reference external" href="http://gradha.github.io/nimrod-ouroboros">http://gradha.github.io/nimrod-ouroboros</a>/ (<a class="reference external" href="https://github.com/gradha/nimrod-ouroboros/tree/gh-pages">gh-pages</a>).</li>
+<ul class="simple"><li><a class="reference external" href="http://gradha.github.io/nimrod-ouroboros">http://gradha.github.io/nimrod-ouroboros</a>/ (<a class="reference external" href="https://github.com/gradha/nimrod-ouroboros/tree/gh-pages">gh-pages</a>).</li>
 <li><a class="reference external" href="http://gradha.github.io/seohtracker-logic">http://gradha.github.io/seohtracker-logic</a>/ (<a class="reference external" href="https://github.com/gradha/seohtracker-logic/tree/gh-pages">gh-pages</a>).</li>
+<li><a class="reference external" href="https://github.com/MrJohz/appdirs">https://github.com/MrJohz/appdirs</a> (<a class="reference external" href="https://github.com/MrJohz/appdirs/tree/gh-pages">gh-pages</a>).</li>
 </ul>
+<p>More examples can be found at <a class="reference external" href="http://gradha.github.io">http://gradha.github.io</a>.</p>
 
-<h1 id="changes">Changes</h1><p>This is stable version 0.2.0. For a list of changes see the <a class="reference external" href="docs/changes.html">docs/changes.rst file</a>.</p>
+<h1 id="changes">Changes</h1><p>This is development version 0.2.3. For a list of changes see the <a class="reference external" href="docs/changes.html">docs/changes.rst file</a>.</p>
 
 <h1 id="license">License</h1><p><a class="reference external" href="license.html">MIT license</a>.</p>
 
-<h1 id="installing-from-source-code">Installing from source code</h1>
-<h2 id="development-version">Development version</h2><p>Install the <a class="reference external" href="http://nimrod-lang.org">Nimrod compiler</a>. Then use <a class="reference external" href="https://github.com/nimrod-code/babel">Nimrod's babel package manager</a> to install locally the github checkout:<pre>
+<h1 id="installing-the-binary">Installing the binary</h1>
+<h2 id="stable-version">Stable version</h2><p>Install the <a class="reference external" href="http://nimrod-lang.org">Nimrod compiler</a>. Then use <a class="reference external" href="https://github.com/nimrod-code/babel">Nimrod's Babel package manager</a> to install:<pre>
+$ babel update
+$ babel install gh_nimrod_doc_pages
+$ gh_nimrod_doc_pages -v</pre>
+</p>
+
+<h2 id="development-version">Development version</h2><p>Install the <a class="reference external" href="http://nimrod-lang.org">Nimrod compiler</a>. Then use <a class="reference external" href="https://github.com/nimrod-code/babel">Nimrod's Babel package manager</a> to install locally the github checkout:<pre>
 $ git clone --recursive https://github.com/gradha/gh_nimrod_doc_pages
 $ cd gh_nimrod_doc_pages
 $ babel install -y</pre>
+</p>
+<p>If you don't mind downloading the git repo every time you can also use Babel to install the latest development version:<pre>
+$ babel update
+$ babel install -y gh_nimrod_doc_pages@#HEAD</pre>
 </p>
 
 <h1 id="usage">Usage</h1>
@@ -301,7 +312,7 @@ $ babel install -y</pre>
 
 
 
-<small>Generated: 2014-06-18 01:22:46 UTC</small>
+<small>Generated: 2014-08-06 00:02:11 UTC</small>
 </div>
 </body>
 </html>

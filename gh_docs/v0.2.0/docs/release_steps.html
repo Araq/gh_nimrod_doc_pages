@@ -239,7 +239,7 @@ a.reference:hover {color: #E00000;background-color: #ffff00;display: margin;
 <body>
 <div class="document" id="documentId">
 <h1 class="title">What to do for a new public release of gh_nimrod_doc_pages?</h1>
-<ul class="simple"><li>Create new milestone with version number (<tt class="docutils literal"><span class="pre">vXXX</span></tt>) at <a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/milestones">https://github.com/gradha/gh_nimrod_doc_pages/issues/milestones</a>.</li>
+<ul class="simple"><li>Create new milestone with version number (<tt class="docutils literal"><span class="pre">vXXX</span></tt>) at <a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages">https://github.com/gradha/gh_nimrod_doc_pages</a>.</li>
 <li>Create new dummy issue <cite>Release versionname</cite> and assign to that milestone.</li>
 <li><tt class="docutils literal"><span class="pre">git flow release start versionname</span></tt> (versionname without v).</li>
 <li>Update version numbers:<ul class="simple"><li>Modify <a class="reference external" href="../README.html">README.rst</a>.</li>
@@ -261,24 +261,19 @@ a.reference:hover {color: #E00000;background-color: #ffff00;display: margin;
 <li>Increase version numbers, <tt class="docutils literal"><span class="pre">master</span></tt> branch gets +0.0.1:<ul class="simple"><li>Modify <a class="reference external" href="../README.html">README.rst</a>.</li>
 <li>Modify <a class="reference external" href="../gh_nimrod_doc_pages.nim">gh_nimrod_doc_pages.nim</a>.</li>
 <li>Modify <a class="reference external" href="../gh_nimrod_doc_pages.babel">gh_nimrod_doc_pages.babel</a>.</li>
-<li>Add to <a class="reference external" href="changes.html">docs/changes.rst</a> development version with unknown date.</li>
+<li>Add to <a class="reference external" href="CHANGES.html">docs/CHANGES.rst</a> development version with unknown date.</li>
 </ul>
 </li>
 <li><tt class="docutils literal"><span class="pre">git commit -av</span></tt> into <tt class="docutils literal"><span class="pre">master</span></tt> with <em>Bumps version numbers for development version. Refs #release issue</em>.</li>
-<li>Regenerate static website.<ul class="simple"><li><tt class="docutils literal"><span class="pre">git checkout gh-pages</span></tt> to switch to <tt class="docutils literal"><span class="pre">gh-pages</span></tt>.</li>
-<li><tt class="docutils literal"><span class="pre">rm `git ls-files -o` &amp;&amp; rm -Rf docs</span></tt> to purge files from other branches and force regeneration of all docs, even tags.</li>
-<li><tt class="docutils literal"><span class="pre">gh_nimrod_doc_pages -c . &amp;&amp; git add . &amp;&amp; git commit</span></tt>. Tag with <cite>Regenerates website. Refs #release_issue</cite>.</li>
-</ul>
-</li>
-<li><tt class="docutils literal"><span class="pre">git push origin master stable gh-pages --tags</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">git push origin master stable --tags</span></tt>.</li>
 <li>Close the dummy release issue.</li>
-<li>Announce at <a class="reference external" href="http://forum.nimrod-lang.org/t/460">http://forum.nimrod-lang.org/t/460</a>.</li>
+<li>Announce at <a class="reference external" href="http://forum.nimrod-lang.org/">http://forum.nimrod-lang.org/</a>.</li>
 <li>Close the milestone on github.</li>
 </ul>
 
 
 
-<small>Generated: 2014-06-18 01:22:46 UTC</small>
+<small>Generated: 2014-08-06 00:02:09 UTC</small>
 </div>
 </body>
 </html>

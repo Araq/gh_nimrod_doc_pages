@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Index</title>
+<title>What to do for a new public release of gh_nimrod_doc_pages?</title>
 <style type="text/css">
 
 span.DecNumber {color: blue}
@@ -238,42 +238,47 @@ a.reference:hover {color: #E00000;background-color: #ffff00;display: margin;
 </head>
 <body>
 <div class="document" id="documentId">
-<h1 class="title">Index</h1>
-Documents: <a href="docs/changes.html">gh_nimrod_doc_pages changes log</a>, <a href="license.html">gh_nimrod_doc_pages license</a>, <a href="README.html">gh_nimrod_doc_pages readme</a>, <a href="docs/release_steps.html">What to do for a new public release of gh_nimrod_doc_pages?</a>.<br><p /><h2>Documentation files</h2>
-<ul><li><a href="docs/changes.html">gh_nimrod_doc_pages changes log</a>
-<ul>
-<li><a href="docs/changes.html#v0-2-3">v0.2.3 ????-??-??</a>
-<li><a href="docs/changes.html#v0-2-2-2014-06-18">v0.2.2 2014-06-18</a>
-<li><a href="docs/changes.html#v0-2-0-2014-06-01">v0.2.0 2014-06-01</a>
+<h1 class="title">What to do for a new public release of gh_nimrod_doc_pages?</h1>
+<ul class="simple"><li>Create new milestone with version number (<tt class="docutils literal"><span class="pre">vXXX</span></tt>) at <a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/milestones">https://github.com/gradha/gh_nimrod_doc_pages/issues/milestones</a>.</li>
+<li>Create new dummy issue <cite>Release versionname</cite> and assign to that milestone.</li>
+<li><tt class="docutils literal"><span class="pre">git flow release start versionname</span></tt> (versionname without v).</li>
+<li>Update version numbers:<ul class="simple"><li>Modify <a class="reference external" href="../README.html">README.rst</a>.</li>
+<li>Modify <a class="reference external" href="changes.html">docs/changes.rst</a> with list of changes and version/number.</li>
+<li>Modify <a class="reference external" href="../gh_nimrod_doc_pages.babel">gh_nimrod_doc_pages.babel</a>.</li>
+<li>Modify <a class="reference external" href="../gh_nimrod_doc_pages.nim">gh_nimrod_doc_pages.nim</a>.</li>
 </ul>
+</li>
+<li><tt class="docutils literal"><span class="pre">git commit -av</span></tt> into the release branch the version number changes.</li>
+<li><tt class="docutils literal"><span class="pre">git flow release finish versionname</span></tt> (the tagname is versionname without <tt class="docutils literal"><span class="pre">v</span></tt>). When specifying the tag message, copy and paste a text version of the changes log into the message. Add rst item markers.</li>
+<li>Move closed issues to the release milestone.</li>
+<li><tt class="docutils literal"><span class="pre">git push origin master stable --tags</span></tt>.</li>
+<li>Build binaries for macosx/linux with nake <tt class="docutils literal"><span class="pre">dist</span></tt> command.</li>
+<li>Attach the binaries to the appropriate release at <a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/releases">https://github.com/gradha/gh_nimrod_doc_pages/releases</a>.<ul class="simple"><li>Use nake <tt class="docutils literal"><span class="pre">md5</span></tt> task to generate md5 values, add them to the release.</li>
+<li>Follow the tag link of the release and create a hyper link to its changes log on (e.g. presumably gh-pages version?).</li>
+<li>Also add to the release text the Nimrod compiler version noted in the release issue.</li>
 </ul>
-<ul><li><a href="license.html">gh_nimrod_doc_pages license</a>
-<ul>
+</li>
+<li>Increase version numbers, <tt class="docutils literal"><span class="pre">master</span></tt> branch gets +0.0.1:<ul class="simple"><li>Modify <a class="reference external" href="../README.html">README.rst</a>.</li>
+<li>Modify <a class="reference external" href="../gh_nimrod_doc_pages.nim">gh_nimrod_doc_pages.nim</a>.</li>
+<li>Modify <a class="reference external" href="../gh_nimrod_doc_pages.babel">gh_nimrod_doc_pages.babel</a>.</li>
+<li>Add to <a class="reference external" href="changes.html">docs/changes.rst</a> development version with unknown date.</li>
 </ul>
+</li>
+<li><tt class="docutils literal"><span class="pre">git commit -av</span></tt> into <tt class="docutils literal"><span class="pre">master</span></tt> with <em>Bumps version numbers for development version. Refs #release issue</em>.</li>
+<li>Regenerate static website.<ul class="simple"><li><tt class="docutils literal"><span class="pre">git checkout gh-pages</span></tt> to switch to <tt class="docutils literal"><span class="pre">gh-pages</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">rm `git ls-files -o` &amp;&amp; rm -Rf docs</span></tt> to purge files from other branches and force regeneration of all docs, even tags.</li>
+<li><tt class="docutils literal"><span class="pre">gh_nimrod_doc_pages -c . &amp;&amp; git add . &amp;&amp; git commit</span></tt>. Tag with <cite>Regenerates website. Refs #release_issue</cite>.</li>
 </ul>
-<ul><li><a href="README.html">gh_nimrod_doc_pages readme</a>
-<ul>
-<li><a href="README.html#changes">Changes</a>
-<li><a href="README.html#license">License</a>
-<li><a href="README.html#installing-the-binary">Installing the binary</a>
-<ul><li><a href="README.html#stable-version">Stable version</a>
-<li><a href="README.html#development-version">Development version</a>
-</ul><li><a href="README.html#usage">Usage</a>
-<ul><li><a href="README.html#command-line-switches">Command line switches</a>
-<li><a href="README.html#setting-up-a-project-without-the-gh-pages-branch">Setting up a project without the gh-pages branch</a>
-<li><a href="README.html#setting-up-a-project-with-an-existing-gh-pages-branch">Setting up a project with an existing gh-pages branch</a>
-<li><a href="README.html#updating-generated-docs-in-the-future">Updating generated docs in the future</a>
-<li><a href="README.html#typical-gotchas">Typical gotchas</a>
-</ul><li><a href="README.html#git-branches">Git branches</a>
-<li><a href="README.html#feedback">Feedback</a>
-</ul>
-</ul>
-<ul><li><a href="docs/release_steps.html">What to do for a new public release of gh_nimrod_doc_pages?</a>
-<ul>
-</ul>
+</li>
+<li><tt class="docutils literal"><span class="pre">git push origin master stable gh-pages --tags</span></tt>.</li>
+<li>Close the dummy release issue.</li>
+<li>Announce at <a class="reference external" href="http://forum.nimrod-lang.org/t/460">http://forum.nimrod-lang.org/t/460</a>.</li>
+<li>Close the milestone on github.</li>
 </ul>
 
-<small>Generated: 2014-06-18 01:29:23 UTC</small>
+
+
+<small>Generated: 2014-08-06 00:02:10 UTC</small>
 </div>
 </body>
 </html>
