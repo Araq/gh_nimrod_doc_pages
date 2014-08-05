@@ -14,6 +14,8 @@ v0.2.3 ????-??-??
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/27>`_.
 * `Support markdown generation with fenced blocks extension
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/28>`_.
+* `Replaced local patches with badger_bits
+  <https://github.com/gradha/gh_nimrod_doc_pages/issues/33>`_.
 
 v0.2.2 2014-06-18
 -----------------
