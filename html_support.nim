@@ -1,4 +1,4 @@
-import htmlparser, xmltree, strtabs, os, strutils, global_patches, streams,
+import htmlparser, xmltree, strtabs, os, strutils, bb_system, streams,
   globals_for_gh, macros
 
 ## gh_nimrod_doc_pages html support files.
