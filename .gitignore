@@ -1,0 +1,6 @@
+*.swp
+.DS_Store
+/README.html
+/external/
+/gh_nimrod_doc_pages
+nimcache/
