@@ -16,6 +16,11 @@ v0.2.3 ????-??-??
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/28>`_.
 * `Replaced local patches with badger_bits
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/33>`_.
+* `Modified default directory for HTML files
+  <https://github.com/gradha/gh_nimrod_doc_pages/issues/32>`_. You can keep
+  using the default ``docs`` directory for generated output, but since this may
+  conflict with other same named directories in other branches it is a good
+  idea to pick something unique for the ``gh-pages`` branch.
 
 v0.2.2 2014-06-18
 -----------------
