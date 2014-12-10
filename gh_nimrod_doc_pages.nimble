@@ -8,7 +8,7 @@ bin          = "gh_nimrod_doc_pages"
 
 InstallFiles = """
 
-gh_nimrod_doc_pages.babel
+gh_nimrod_doc_pages.nimble
 
 """
 
