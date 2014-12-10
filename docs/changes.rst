@@ -10,7 +10,7 @@ v0.2.3 ????-??-??
 
 * `Recognises .markdown extension too
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/26>`_.
-* `Fix infinite loop post processing html links
+* `Fixed infinite loop post processing html links
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/27>`_.
 * `Support markdown generation with fenced blocks extension
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/28>`_.
@@ -21,6 +21,8 @@ v0.2.3 ????-??-??
   using the default ``docs`` directory for generated output, but since this may
   conflict with other same named directories in other branches it is a good
   idea to pick something unique for the ``gh-pages`` branch.
+* `Moved badger bits submodule to nimble package
+  <https://github.com/gradha/gh_nimrod_doc_pages/issues/37>`_.
 
 v0.2.2 2014-06-18
 -----------------
