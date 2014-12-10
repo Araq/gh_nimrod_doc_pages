@@ -13,4 +13,4 @@ gh_nimrod_doc_pages.babel
 """
 
 [Deps]
-Requires: "argument_parser >= 0.2.0, midnight_dynamite >= 0.2.3"
+Requires: "argument_parser >= 0.2.0, midnight_dynamite >= 0.2.3, https://github.com/gradha/badger_bits.git"
