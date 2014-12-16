@@ -25,6 +25,8 @@ v0.2.3 ????-??-??
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/37>`_.
 * `Uses lazy_rest submodule for faster HTML generation
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/9>`_.
+* `Improved --version switch output
+  <https://github.com/gradha/gh_nimrod_doc_pages/issues/38>`_.
 
 v0.2.2 2014-06-18
 -----------------
