@@ -559,6 +559,15 @@ proc collapse_idx(base_dir: string) =
     dest.write_file(mangle_idx(path, relative_dir))
 
 
+proc scan_nim_files(): seq[string] =
+  ## Returns a list of nimrod files to process.
+  ##
+  ## This is a wrapper around scan_files() which removes nakefile.nim files
+  ## from the result. The proc will return always a sequence, maybe empty.
+  result = filter_it(nim_extensions.scan_files,
+    it.extract_filename.to_lower != "nakefile.nim")
+
+
 proc generate_docs(s: Section; src_dir: string): seq[string] =
   ## Generates in `src_dir` documentation according to the `s` configuration.
   ##
@@ -580,7 +589,7 @@ proc generate_docs(s: Section; src_dir: string): seq[string] =
         result.add(out_html)
 
   # Process doc2 files, if any specified.
-  var files = if s.doc2_modules.is_nil: scan_files(".nim") else: s.doc2_modules
+  var files = if s.doc2_modules.is_nil: scan_nim_files() else: s.doc2_modules
   loop_files(doc2)
   # Process specified doc files.
   files = s.doc_modules
