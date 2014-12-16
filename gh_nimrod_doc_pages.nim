@@ -63,9 +63,6 @@ const
   name = "gh_nimrod_doc_pages"
   config_filename = name & ".ini"
 
-  version_str* = name & "-0.2.3" ## Program version as a string. \
-  ## The format is ``string-digit(.digit)*``.
-
   version_int* = (major: 0, minor: 2, maintenance: 3) ## \
   ## Program version as an integer tuple.
   ##
@@ -79,6 +76,13 @@ const
   ##
   ## Maintenance version changes mean bugfixes or non commandline changes.
 
+  version_str* = $version_int.major & "." & $version_int.minor & "." &
+    $version_int.maintenance ## \
+    ## Program version as a string.
+    ##
+    ## The format is ``digit(.digit)*``.
+
+
   git_ssh_prefix = "git@github.com:" ## Used to detect origin information.
   git_https_prefix = "https://github.com/" ## Detects origin url.
   git_suffix = ".git" ## Mandatory at end of origin url.
@@ -89,7 +93,7 @@ const
   help_help = "Displays commandline help and exits."
 
   param_version = @["-v", "--version"]
-  help_version = "Displays the current version and exists."
+  help_version = "Displays the current versions and exists."
 
   param_config = @["-c", "--config"]
   help_config = "Specify a path to a specific configuration ini or a " &
@@ -241,7 +245,11 @@ proc process_commandline() =
     quit(QuitFailure)
 
   if G.params.options.has_key(param_version[0]):
-    echo "Version ", version_str, "."
+    echo "Versions:"
+    echo "\tgh_nimrod_doc_pages: ", version_str
+    echo "\tmidnight_dynamite: ", midnight_dynamite.version_str,
+      " (howedown ", hoedown_version_str(), ")"
+    echo "\tlazy_rest: ", lazy_rest.version_str
     quit()
 
   if G.params.options.has_key(param_boot[0]):
