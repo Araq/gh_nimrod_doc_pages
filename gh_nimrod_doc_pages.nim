@@ -3,8 +3,8 @@
 ## For project information see https://github.com/gradha/gh_nimrod_doc_pages.
 
 import argument_parser, bb_os, tables, strutils, osproc, inidata, sequtils,
-  bb_system, sets, algorithm, packages/docutils/rstgen, sorting_lists,
-  midnight_dynamite, html_support, globals_for_gh
+  bb_system, sets, algorithm, sorting_lists, midnight_dynamite, html_support,
+  globals_for_gh, lazy_rest, lazy_rest_pkg/lrstgen
 
 when defined(windows):
   import windows
@@ -414,11 +414,20 @@ proc rst(input_rst: string): string =
   ## Runs `input_rst` through Nimrod's rst2html command.
   ##
   ## Returns the empty string or the relative path to the generated file.
-  let dest = input_rst.change_file_ext("html")
-  if nimrod("rst2html", input_rst, dest):
-    result = dest
-  else:
+  var
+    ERRORS: seq[string] = @[]
+    config = new_rst_config()
+  config[lrc_render_write_index_auto] = "t"
+  let
+    dest = input_rst.change_file_ext("html")
+    html = input_rst.safe_rst_file_to_html(ERRORS.addr, config)
+  if ERRORS.len > 0:
+    echo "Error processing ", input_rst
+    for error in ERRORS: echo error
     result = ""
+  else:
+    dest.write_file(html)
+    result = dest
 
 
 proc doc1(input_nim: string): string =
