@@ -6,3 +6,4 @@ const
   md_extensions* = [".md", ".markdown"]
   rst_extensions* = [".rst"]
   html_extensions* = [".html", ".htm"]
+  nim_extensions* = [".nim"]
