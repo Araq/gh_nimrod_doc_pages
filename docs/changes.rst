@@ -24,7 +24,14 @@ v0.2.3 ????-??-??
 * `Moved badger bits submodule to nimble package
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/37>`_.
 * `Uses lazy_rest submodule for faster HTML generation
-  <https://github.com/gradha/gh_nimrod_doc_pages/issues/9>`_.
+  <https://github.com/gradha/gh_nimrod_doc_pages/issues/9>`_. Some of the
+  improvements this brings:
+
+ * Code block line numbering.
+ * Check for infinite include recursion.
+ * Syntax highlight for more languages.
+ * No separate process spawning, so it should be faster.
+
 * `Improved --version switch output
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/38>`_.
 * `Ignores nakefile.nim during default source scan
