@@ -3,8 +3,8 @@
 ## For project information see https://github.com/gradha/gh_nimrod_doc_pages.
 
 import argument_parser, bb_os, tables, strutils, osproc, inidata, sequtils,
-  bb_system, sets, algorithm, packages/docutils/rstgen, sorting_lists,
-  midnight_dynamite, html_support, globals_for_gh
+  bb_system, sets, algorithm, sorting_lists, midnight_dynamite, html_support,
+  globals_for_gh, lazy_rest
 
 when defined(windows):
   import windows
@@ -237,7 +237,7 @@ proc process_commandline() =
 
   proc abort(message: string) =
     echo message & "\n"
-    params.echo_help
+    PARAMS.echo_help
     quit(QuitFailure)
 
   if G.params.options.has_key(param_version[0]):
@@ -414,11 +414,20 @@ proc rst(input_rst: string): string =
   ## Runs `input_rst` through Nimrod's rst2html command.
   ##
   ## Returns the empty string or the relative path to the generated file.
-  let dest = input_rst.change_file_ext("html")
-  if nimrod("rst2html", input_rst, dest):
-    result = dest
-  else:
+  var
+    ERRORS: seq[string] = @[]
+    config = new_rst_config()
+  config[lrc_render_write_index_auto] = "t"
+  let
+    dest = input_rst.change_file_ext("html")
+    html = input_rst.safe_rst_file_to_html(ERRORS.addr, config)
+  if ERRORS.len > 0:
+    echo "Error processing ", input_rst
+    for error in ERRORS: echo error
     result = ""
+  else:
+    dest.write_file(html)
+    result = dest
 
 
 proc doc1(input_nim: string): string =
@@ -495,8 +504,8 @@ proc extract_unique_directories(filenames: seq[string],
   var P = 0
   while P < TEMP.len:
     let
-      prefix1 = TEMP[P] & dir_sep
-      prefix2 = TEMP[P] & alt_sep
+      prefix1 = TEMP[P] & DirSep
+      prefix2 = TEMP[P] & AltSep
     TEMP = TEMP.filter_it(
       (not it.starts_with(prefix1)) and (not it.starts_with(prefix2)))
     P.inc
@@ -528,13 +537,13 @@ proc collapse_idx(base_dir: string) =
   for path in base_dir.dot_walk_dir_rec(filter):
     let (dir, name, ext) = path.split_file
     # Ignore files which are not an index.
-    if ext != index_ext: continue
+    if ext != IndexExt: continue
     # Ignore files found in the base_dir.
     if dir.same_file(base_dir): continue
     # Extract the parent paths.
     let dest = base_dir/(name & ext)
     var relative_dir = dir[base_dir.len .. <dir.len]
-    if relative_dir[0] == dir_sep or  relative_dir[0] == alt_sep:
+    if relative_dir[0] == DirSep or relative_dir[0] == AltSep:
       relative_dir.delete(0, 0)
     assert(not relative_dir.is_absolute)
 
@@ -658,7 +667,7 @@ proc validate_target_html(filename: string): bool =
   if first < 1: abort "doesn't contain the required " &
     "starting marker '" & api_list_start & "'."
 
-  let eol = html.find(newlines, first)
+  let eol = html.find(NewLines, first)
   if eol < 0: abort "doesn't contain markers on different lines."
 
   if html.find(api_list_end, eol) < 0: abort "doesn't contain the required " &

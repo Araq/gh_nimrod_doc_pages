@@ -13,4 +13,11 @@ gh_nimrod_doc_pages.nimble
 """
 
 [Deps]
-Requires: "argument_parser >= 0.2.0, midnight_dynamite >= 0.2.3, https://github.com/gradha/badger_bits.git"
+Requires: """
+
+argument_parser >= 0.2.0
+https://github.com/gradha/badger_bits.git
+lazy_rest >= 0.2.0
+midnight_dynamite >= 0.2.3
+
+"""

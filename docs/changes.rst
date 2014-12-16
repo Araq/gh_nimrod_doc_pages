@@ -23,6 +23,8 @@ v0.2.3 ????-??-??
   idea to pick something unique for the ``gh-pages`` branch.
 * `Moved badger bits submodule to nimble package
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/37>`_.
+* `Uses lazy_rest submodule for faster HTML generation
+  <https://github.com/gradha/gh_nimrod_doc_pages/issues/9>`_.
 
 v0.2.2 2014-06-18
 -----------------
