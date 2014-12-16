@@ -42,7 +42,7 @@ proc post_process_html_local_links(html: PXmlNode, filename: string): bool =
           test_path = filename.split_file.dir/rel_path
         if test_path.exists_file:
           a.attrs["href"] = rel_path
-          RESULT = true
+          result = true
 
 
 proc find_local_links(html: PXmlNode, filename: string): seq[pair] =
