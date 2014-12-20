@@ -223,7 +223,8 @@ proc process_commandline() =
   ##
   ## It also initializes fields like `git_exe` or `nimrod_exe`.
   G.git_exe = "git".find_exe
-  G.nimrod_exe = "nimrod".find_exe
+  G.nimrod_exe = "nim".find_exe
+  if G.nimrod_exe.len < 1: G.nimrod_exe = "nimrod".find_exe
   G.md_params.init
 
   var PARAMS: seq[Tparameter_specification] = @[]
