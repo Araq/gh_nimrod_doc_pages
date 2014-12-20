@@ -36,6 +36,8 @@ v0.2.3 ????-??-??
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/38>`_.
 * `Ignores nakefile.nim during default source scan
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/7>`_.
+* `Detects and favours nim compiler
+  <https://github.com/gradha/gh_nimrod_doc_pages/issues/36>`_.
 
 v0.2.2 2014-06-18
 -----------------
