@@ -148,13 +148,12 @@ Typical gotchas
 * During the generation of documentation from ``.nim`` files in a project
   where there are many ``.nim`` files with specific nimrod configuration
   parameters, the ``doc2`` command is likely not seeing those because it
-  doesn't change directory to those files. For the moment you have to disable
-  use of ``doc2`` and use the ``doc`` command instead.
+  doesn't change directory to those files. For the moment you have to use the
+  ``doc`` command instead.
 * In general the ``doc2`` program is unstable: three of the four source files
   of this program can't be rendered with ``doc2`` because it crashes. Please
   report these issues at `https://github.com/Araq/Nimrod/issues
-  <https://github.com/Araq/Nimrod/issues>`_ and in the meantime force the
-  program to use the ``doc`` command.
+  <https://github.com/Araq/Nimrod/issues>`_.
 
 
 Git branches

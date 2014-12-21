@@ -574,7 +574,7 @@ proc generate_docs(s: Section; src_dir: string): seq[string] =
   ##
   ## Returns the list of relative paths to the generated HTML files.
   assert src_dir.not_nil and src_dir.len > 0
-  assert s.doc_modules.not_nil
+  assert s.doc2_modules.not_nil
   result = @[]
 
   # Save the src_dir too, changing to it to get relative paths.
@@ -589,12 +589,12 @@ proc generate_docs(s: Section; src_dir: string): seq[string] =
       if out_html.len > 0:
         result.add(out_html)
 
-  # Process doc2 files, if any specified.
-  var files = if s.doc2_modules.is_nil: scan_nim_files() else: s.doc2_modules
-  loop_files(doc2)
-  # Process specified doc files.
-  files = s.doc_modules
+  # Process doc files, if any specified.
+  var files = if s.doc_modules.is_nil: scan_nim_files() else: s.doc_modules
   loop_files(doc1)
+  # Process specified doc2 files.
+  files = s.doc2_modules
+  loop_files(doc2)
   # Markdown files.
   files = if s.md_files.is_nil: md_extensions.scan_files else: s.md_files
   loop_files(md)
