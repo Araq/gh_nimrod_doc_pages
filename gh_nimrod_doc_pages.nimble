@@ -2,7 +2,7 @@
 name         = "gh_nimrod_doc_pages"
 version      = "0.2.3"
 author       = "Grzegorz Adam Hankiewicz"
-description  = "Generates a GitHub documentation website for Nimrod projects."
+description  = "Generates a GitHub documentation website for Nim projects."
 license      = "MIT"
 bin          = "gh_nimrod_doc_pages"
 

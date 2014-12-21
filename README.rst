@@ -4,7 +4,7 @@ gh_nimrod_doc_pages readme
 
 **gh_nimrod_doc_pages** is a small helper for developers who want to generate
 and maintain a `GitHub Pages website <https://pages.github.com>`_ using the
-documentation of their `Nimrod <http://nimrod-lang.org>`_ source code. Once you
+documentation of their `Nim <http://nim-lang.org>`_ source code. Once you
 create a small ``.ini`` configuration file with some parameters,
 ``gh_nimrod_doc_pages`` will read this file and produce HTML files from all
 your ``.rst``, ``.md`` and ``.nim`` files for any tags and branches you want.
@@ -41,30 +41,30 @@ Installing the binary
 Stable version
 --------------
 
-Install the `Nimrod compiler <http://nimrod-lang.org>`_. Then use `Nimrod's
-Babel package manager <https://github.com/nimrod-code/babel>`_ to install::
+Install the `Nim compiler <http://nim-lang.org>`_. Then use `Nim's
+Nimble package manager <https://github.com/nim-lang/nimble>`_ to install::
 
-    $ babel update
-    $ babel install gh_nimrod_doc_pages
+    $ nimble update
+    $ nimble install gh_nimrod_doc_pages
     $ gh_nimrod_doc_pages -v
 
 
 Development version
 -------------------
 
-Install the `Nimrod compiler <http://nimrod-lang.org>`_. Then use `Nimrod's
-Babel package manager <https://github.com/nimrod-code/babel>`_ to install
+Install the `Nim compiler <http://nim-lang.org>`_. Then use `Nim's
+Nimble package manager <https://github.com/nim-lang/nimble>`_ to install
 locally the github checkout::
 
     $ git clone --recursive https://github.com/gradha/gh_nimrod_doc_pages
     $ cd gh_nimrod_doc_pages
-    $ babel install -y
+    $ nimble install -y
 
-If you don't mind downloading the git repo every time you can also use Babel to
-install the latest development version::
+If you don't mind downloading the git repo every time you can also use Nimble
+to install the latest development version::
 
-    $ babel update
-    $ babel install -y gh_nimrod_doc_pages@#HEAD
+    $ nimble update
+    $ nimble install -y gh_nimrod_doc_pages@#head
 
 
 Usage
@@ -88,7 +88,7 @@ contains examples.
 Setting up a project without the gh-pages branch
 ------------------------------------------------
 
-If you are a Nimrod coder and want to use this tool, chances are you don't use
+If you are a Nim coder and want to use this tool, chances are you don't use
 the ``gh-pages`` branch. These are the steps you would do to create and
 populate it:
 
@@ -170,5 +170,5 @@ Feedback
 
 You can send me feedback through `github's issue tracker
 <https://github.com/gradha/gh_nimrod_doc_pages/issues>`_. I also take a look
-from time to time to `Nimrod's forums <http://forum.nimrod-code.org>`_ where
+from time to time to `Nim's forums <http://forum.nim-lang.org>`_ where
 you can talk to other nimrod programmers.

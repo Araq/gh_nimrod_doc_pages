@@ -11,8 +11,8 @@ What to do for a new public release of gh_nimrod_doc_pages?
   * Modify `README.rst <../README.rst>`_.
   * Modify `docs/changes.rst <changes.rst>`_ with list of changes and
     version/number.
-  * Modify `gh_nimrod_doc_pages.babel
-    <../gh_nimrod_doc_pages.babel>`_.
+  * Modify `gh_nimrod_doc_pages.nimble
+    <../gh_nimrod_doc_pages.nimble>`_.
   * Modify `gh_nimrod_doc_pages.nim
     <../gh_nimrod_doc_pages.nim>`_.
 
@@ -30,7 +30,7 @@ What to do for a new public release of gh_nimrod_doc_pages?
   * Use nake ``md5`` task to generate md5 values, add them to the release.
   * Follow the tag link of the release and create a hyper link to its changes
     log on (e.g. presumably gh-pages version?).
-  * Also add to the release text the Nimrod compiler version noted in the
+  * Also add to the release text the Nim compiler version noted in the
     release issue.
 
 * Increase version numbers, ``master`` branch gets +0.0.1:
@@ -38,8 +38,8 @@ What to do for a new public release of gh_nimrod_doc_pages?
   * Modify `README.rst <../README.rst>`_.
   * Modify `gh_nimrod_doc_pages.nim
     <../gh_nimrod_doc_pages.nim>`_.
-  * Modify `gh_nimrod_doc_pages.babel
-    <../gh_nimrod_doc_pages.babel>`_.
+  * Modify `gh_nimrod_doc_pages.nimble
+    <../gh_nimrod_doc_pages.nimble>`_.
   * Add to `docs/changes.rst <changes.rst>`_ development version with unknown
     date.
 
@@ -56,6 +56,6 @@ What to do for a new public release of gh_nimrod_doc_pages?
 
 * ``git push origin master stable gh-pages --tags``.
 * Close the dummy release issue.
-* Announce at `http://forum.nimrod-lang.org/t/460
-  <http://forum.nimrod-lang.org/t/460>`_.
+* Announce at `http://forum.nim-lang.org/t/460
+  <http://forum.nim-lang.org/t/460>`_.
 * Close the milestone on github.

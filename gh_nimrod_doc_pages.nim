@@ -378,7 +378,7 @@ proc scan_files(extension: string, dir = default_scan_files_dir): seq[string] =
 
 
 proc nimrod(command, src: string; dest = ""): bool =
-  ## Runs Nimrod's `command` from `src` to `dest`.
+  ## Runs Nim's `command` from `src` to `dest`.
   ##
   ## Returns true if everything went ok, false if the file was skipped. The
   ## `dest` parameter can't be nil, but if you pass the empty string the the
@@ -420,7 +420,7 @@ proc md(input_md: string): string =
 
 
 proc rst(input_rst: string): string =
-  ## Runs `input_rst` through Nimrod's rst2html command.
+  ## Runs `input_rst` through Nim's rst2html command.
   ##
   ## Returns the empty string or the relative path to the generated file.
   var
@@ -440,7 +440,7 @@ proc rst(input_rst: string): string =
 
 
 proc doc1(input_nim: string): string =
-  ## Runs `input_nim` through Nimrod's doc command.
+  ## Runs `input_nim` through Nim's doc command.
   ##
   ## Returns the empty string or the relative path to the generated file.
   let dest = input_nim.change_file_ext("html")
@@ -451,7 +451,7 @@ proc doc1(input_nim: string): string =
 
 
 proc doc2(input_nim: string): string =
-  ## Runs `input_nim` through Nimrod's doc2 command.
+  ## Runs `input_nim` through Nim's doc2 command.
   ##
   ## Returns the empty string or the relative path to the generated file.
   let dest = input_nim.change_file_ext("html")
@@ -561,7 +561,7 @@ proc collapse_idx(base_dir: string) =
 
 
 proc scan_nim_files(): seq[string] =
-  ## Returns a list of nimrod files to process.
+  ## Returns a list of Nim files to process.
   ##
   ## This is a wrapper around scan_files() which removes nakefile.nim files
   ## from the result. The proc will return always a sequence, maybe empty.
