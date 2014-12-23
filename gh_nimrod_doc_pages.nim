@@ -377,6 +377,19 @@ proc scan_files(extension: string, dir = default_scan_files_dir): seq[string] =
   result = scan_files([extension], dir)
 
 
+proc write_html_toc(html, filename: string) =
+  ## Writes the index TOC hierarchy to the specified `filename`.
+  ##
+  ## The format of the index file will conform to `Nim's idx file format
+  ## <http://nim-lang.org/docgen.html#index-idx-file-format>`_. If there is any
+  ## error or the index file ends up empty, the index file won't be created.
+  let toc = html.find_all_headers
+  if toc.len < 1:
+    return
+
+  quit("hehehe " & filename)
+
+
 proc nimrod(command, src: string; dest = ""): bool =
   ## Runs Nim's `command` from `src` to `dest`.
   ##
@@ -409,14 +422,26 @@ proc nimrod(command, src: string; dest = ""): bool =
 proc md(input_md: string): string =
   ## Runs `input_md` through the default Midnight Dynamite conversion.
   ##
-  ## Returns the empty string or the relative path to the generated file.
-  let dest = input_md.change_file_ext("html")
+  ## Returns the empty string or the relative path to the generated file. If
+  ## possible an index file is generated too.
+  let
+    dest = input_md.change_file_ext("html")
+    idx = input_md.change_file_ext("idx")
+
+  G.md_params.reset
+  G.md_params.add(input_md.read_file)
+  let html = G.md_params.full_html
+
   dest.remove_file
-  G.md_params.render_file(input_md, dest)
+  idx.remove_file
+
+  dest.write_file(html)
   if dest.exists_file:
     result = dest
+    html.write_html_toc(idx)
   else:
     result = ""
+    return
 
 
 proc rst(input_rst: string): string =

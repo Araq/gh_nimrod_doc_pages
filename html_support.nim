@@ -183,6 +183,45 @@ proc post_process_html_local_links*(filename: string) =
     filename.write_file(buf)
     echo "Patching local links in ", filename
 
+type
+  Header_info* = tuple[level: int, text: string]
+
+
+proc find_all_headers*(n: PXmlNode, result: var seq[Header_info]) =
+  ## Iterates over all the children of `n` returning those matching `h?`.
+  ##
+  ## Found headers will be appended to the `result` sequence, which can't be
+  ## nil or the proc will crash. The returned header level info is equal to the
+  ## tag level (``h1`` => 1).
+  assert result.not_nil
+  assert n.kind == xnElement
+
+  proc add_text(r: var seq[Header_info], level: int, text: string) =
+    # Helper to avoid adding empty headers, hoedown likes to create them.
+    if text.len > 0: r.add((level, text))
+
+  for child in n.items():
+    if child.kind != xnElement:
+      continue
+
+    case child.tag
+    of "h1": result.add_text(1, child.inner_text.strip)
+    of "h2": result.add_text(2, child.inner_text.strip)
+    of "h3": result.add_text(3, child.inner_text.strip)
+    of "h4": result.add_text(4, child.inner_text.strip)
+    of "h5": result.add_text(5, child.inner_text.strip)
+    of "h6": result.add_text(6, child.inner_text.strip)
+    else: child.find_all_headers(result)
+
+
+proc find_all_headers*(html: string): seq[Header_info] =
+  ## Wraps extraction of headers from an HTML file.
+  ##
+  ## Returns the found headers or the empty list.
+  let node = html.new_string_stream.parse_html
+  result = @[]
+  node.find_all_headers(result)
+
 
 proc test() =
   ## Runs internal tests to see if all works as expected.
