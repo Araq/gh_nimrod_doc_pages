@@ -391,7 +391,7 @@ proc nimrod(command, src: string; dest = ""): bool =
   let
     out_param = if dest.len > 0: "--out:" & dest else: ""
     command = G.nimrod_exe & " " & command &
-      " --verbosity:0 --index:on " & out_param & " " & src
+      " --verbosity:0 --skipProjCfg --index:on " & out_param & " " & src
     (output, exit) = execCmdEx(command)
 
   if exit != 0:
