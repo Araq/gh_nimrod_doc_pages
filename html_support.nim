@@ -15,6 +15,7 @@ import htmlparser, xmltree, strtabs, os, strutils, bb_system, streams,
 type
   First_tag = tuple[pos: int, tag: string]
   pair = tuple[src, dest: string] # Holds text replacement pairs.
+  Header_info* = tuple[level: int, href, text: string]
 
 
 proc post_process_html_local_links(html: PXmlNode, filename: string): bool =
@@ -183,9 +184,6 @@ proc post_process_html_local_links*(filename: string) =
     filename.write_file(buf)
     echo "Patching local links in ", filename
 
-type
-  Header_info* = tuple[level: int, text: string]
-
 
 proc find_all_headers*(n: PXmlNode, result: var seq[Header_info]) =
   ## Iterates over all the children of `n` returning those matching `h?`.
@@ -196,21 +194,28 @@ proc find_all_headers*(n: PXmlNode, result: var seq[Header_info]) =
   assert result.not_nil
   assert n.kind == xnElement
 
-  proc add_text(r: var seq[Header_info], level: int, text: string) =
-    # Helper to avoid adding empty headers, hoedown likes to create them.
-    if text.len > 0: r.add((level, text))
+  proc add_text(r: var seq[Header_info], level: int,
+      text: string, toc: var int) =
+    ## Helper to avoid adding empty headers, hoedown likes to create them.
+    ##
+    ## The `toc` is used to generate a "toc_X" href, it will be increased by
+    ## one if the text is added successfully.
+    if text.len > 0:
+      r.add((level, "toc_" & $toc, text))
+      toc.inc
 
+  var toc = 0
   for child in n.items():
     if child.kind != xnElement:
       continue
 
     case child.tag
-    of "h1": result.add_text(1, child.inner_text.strip)
-    of "h2": result.add_text(2, child.inner_text.strip)
-    of "h3": result.add_text(3, child.inner_text.strip)
-    of "h4": result.add_text(4, child.inner_text.strip)
-    of "h5": result.add_text(5, child.inner_text.strip)
-    of "h6": result.add_text(6, child.inner_text.strip)
+    of "h1": result.add_text(1, child.inner_text.strip, toc)
+    of "h2": result.add_text(2, child.inner_text.strip, toc)
+    of "h3": result.add_text(3, child.inner_text.strip, toc)
+    of "h4": result.add_text(4, child.inner_text.strip, toc)
+    of "h5": result.add_text(5, child.inner_text.strip, toc)
+    of "h6": result.add_text(6, child.inner_text.strip, toc)
     else: child.find_all_headers(result)
 
 
