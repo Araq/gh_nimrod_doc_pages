@@ -1,5 +1,5 @@
 import htmlparser, xmltree, strtabs, os, strutils, bb_system, streams,
-  globals_for_gh, macros
+  globals_for_gh, macros, lazy_rest_pkg/lrstgen
 
 ## gh_nimrod_doc_pages html support files.
 ##
@@ -219,13 +219,46 @@ proc find_all_headers*(n: PXmlNode, result: var seq[Header_info]) =
     else: child.find_all_headers(result)
 
 
-proc find_all_headers*(html: string): seq[Header_info] =
+proc find_all_headers(html: string): seq[Header_info] =
   ## Wraps extraction of headers from an HTML file.
   ##
   ## Returns the found headers or the empty list.
   let node = html.new_string_stream.parse_html
   result = @[]
   node.find_all_headers(result)
+
+
+proc tocify_markdown*(filename: string) =
+  ## Reads `filename` HTML and generates its index companion file.
+  ##
+  ## The `filename` usually contains the HTML of generated markdown code but in
+  ## theory this could work with anything. The generated index will be written
+  ## to the IdxExt variant.
+  ##
+  ## The format of the index file will conform to `Nim's idx file format
+  ## <http://nim-lang.org/docgen.html#index-idx-file-format>`_. If there is any
+  ## error or the index file ends up empty, the index file won't be created.
+  var toc = filename.read_file.find_all_headers
+  if toc.len < 1:
+    return
+
+  var
+    prefix = filename
+    GENERATOR: TRstGenerator
+
+  GENERATOR.init_rst_generator(out_html, filename)
+
+  if toc[0].level == 1:
+    # Special first entry reserved for the title.
+    GENERATOR.set_index_term("", toc[0].text)
+    system.delete(toc, 0)
+
+  for level, href, text in toc.items:
+    GENERATOR.set_index_term(href, text.align(level))
+
+  let idx = filename.change_file_ext("idx")
+  idx.remove_file
+  GENERATOR.write_index_file(idx)
 
 
 proc test() =
