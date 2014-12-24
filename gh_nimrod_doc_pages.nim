@@ -669,6 +669,24 @@ proc create_clone_dir() =
     quit "Can't work with existing dir '" & full & "' already there!"
   full.create_dir
 
+  when defined(macosx):
+    ## Calls a macosx command on the directory to exclude it from backups.
+    ##
+    ## The macosx tmutil command is invoked to mark the specified path as an
+    ## item to be excluded from time machine backups. If a path already exists
+    ## with files before excluding it, newer files won't be added to the
+    ## directory, but previous files won't be removed from the backup until the
+    ## user deletes that directory.
+    ##
+    ## The whole proc is optional and will ignore all kinds of errors. The only
+    ## way to be sure that it works is to call ``tmutil isexcluded path``.
+    try:
+      var p = startProcess("/usr/bin/tmutil", args = ["addexclusion", full])
+      discard p.waitForExit
+      p.close
+    except E_Base, EOS:
+      discard
+
 
 proc validate_target_html(filename: string): bool =
   ## Makes sure `filename` is valid and contains necessary markers.
