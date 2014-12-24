@@ -185,6 +185,22 @@ proc post_process_html_local_links*(filename: string) =
     echo "Patching local links in ", filename
 
 
+proc recursive_text*(n: PXmlNode): string =
+  ## Extracts all possible inner text ignoring tags.
+  ##
+  ## The stdlib innerText proc doesn't deal with headers containing other inner
+  ## tags like ``<code>``.
+  result = ""
+  if n.kind != xnElement:
+    return
+
+  for child in n.items:
+    if child.kind in {xnText, xnEntity}:
+      result.add(child.text)
+    else:
+      result.add(child.recursive_text)
+
+
 proc extract_header(n: PXmlNode, result: var seq[Header_info]) =
   ## Extracts from header node `n` the identifier and adds it to `result`.
   ##
@@ -194,7 +210,7 @@ proc extract_header(n: PXmlNode, result: var seq[Header_info]) =
   if n.attrs.is_nil:
     return
 
-  let text = n.inner_text.strip
+  let text = n.recursive_text.strip
   if text.len < 1:
     return
 
@@ -269,7 +285,7 @@ proc tocify_markdown*(filename: string) =
     system.delete(toc, 0)
 
   for level, href, text in toc.items:
-    GENERATOR.set_index_term(href, text.align(level))
+    GENERATOR.set_index_term(href, text, level.repeat_char & text)
 
   let idx = filename.change_file_ext("idx")
   idx.remove_file
