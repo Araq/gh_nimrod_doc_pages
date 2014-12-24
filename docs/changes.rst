@@ -44,6 +44,8 @@ v0.2.3 ????-??-??
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/39>`_.
 * `Generates .idx files for markdown files
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/16>`_.
+* `Excludes temp directories from time machine backups under OSX
+  <https://github.com/gradha/gh_nimrod_doc_pages/issues/40>`_.
 
 v0.2.2 2014-06-18
 -----------------
