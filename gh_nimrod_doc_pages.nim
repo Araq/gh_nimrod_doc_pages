@@ -225,7 +225,7 @@ proc process_commandline() =
   G.git_exe = "git".find_exe
   G.nimrod_exe = "nim".find_exe
   if G.nimrod_exe.len < 1: G.nimrod_exe = "nimrod".find_exe
-  G.md_params.init
+  G.md_params.init(render_nesting_level = 6)
 
   var PARAMS: seq[Tparameter_specification] = @[]
   PARAMS.add(new_parameter_specification(PK_HELP,
@@ -409,12 +409,14 @@ proc nimrod(command, src: string; dest = ""): bool =
 proc md(input_md: string): string =
   ## Runs `input_md` through the default Midnight Dynamite conversion.
   ##
-  ## Returns the empty string or the relative path to the generated file.
+  ## Returns the empty string or the relative path to the generated file. If
+  ## possible an index file is generated too.
   let dest = input_md.change_file_ext("html")
   dest.remove_file
   G.md_params.render_file(input_md, dest)
   if dest.exists_file:
     result = dest
+    tocify_markdown(dest)
   else:
     result = ""
 

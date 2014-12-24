@@ -42,6 +42,8 @@ v0.2.3 ????-??-??
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/31>`_.
 * `Disable processing of configuration files for module documentation
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/39>`_.
+* `Generates .idx files for markdown files
+  <https://github.com/gradha/gh_nimrod_doc_pages/issues/16>`_.
 
 v0.2.2 2014-06-18
 -----------------
