@@ -185,6 +185,35 @@ proc post_process_html_local_links*(filename: string) =
     echo "Patching local links in ", filename
 
 
+proc extract_header(n: PXmlNode, result: var seq[Header_info]) =
+  ## Extracts from header node `n` the identifier and adds it to `result`.
+  ##
+  ## If the node can't be extracted safely `result` won't be changed. Empty
+  ## headers won't be added either.
+  assert n.kind == xnElement
+  if n.attrs.is_nil:
+    return
+
+  let text = n.inner_text.strip
+  if text.len < 1:
+    return
+
+  var level = 0
+  case n.tag
+  of "h1": level = 1
+  of "h2": level = 2
+  of "h3": level = 3
+  of "h4": level = 4
+  of "h5": level = 5
+  of "h6": level = 6
+  else: return
+
+  if not n.attrs.has_key("id"):
+    return
+
+  result.add((level, n.attrs["id"], text))
+
+
 proc find_all_headers*(n: PXmlNode, result: var seq[Header_info]) =
   ## Iterates over all the children of `n` returning those matching `h?`.
   ##
@@ -194,29 +223,15 @@ proc find_all_headers*(n: PXmlNode, result: var seq[Header_info]) =
   assert result.not_nil
   assert n.kind == xnElement
 
-  proc add_text(r: var seq[Header_info], level: int,
-      text: string, toc: var int) =
-    ## Helper to avoid adding empty headers, hoedown likes to create them.
-    ##
-    ## The `toc` is used to generate a "toc_X" href, it will be increased by
-    ## one if the text is added successfully.
-    if text.len > 0:
-      r.add((level, "toc_" & $toc, text))
-      toc.inc
-
-  var toc = 0
   for child in n.items():
     if child.kind != xnElement:
       continue
 
     case child.tag
-    of "h1": result.add_text(1, child.inner_text.strip, toc)
-    of "h2": result.add_text(2, child.inner_text.strip, toc)
-    of "h3": result.add_text(3, child.inner_text.strip, toc)
-    of "h4": result.add_text(4, child.inner_text.strip, toc)
-    of "h5": result.add_text(5, child.inner_text.strip, toc)
-    of "h6": result.add_text(6, child.inner_text.strip, toc)
-    else: child.find_all_headers(result)
+    of "h1", "h2", "h3", "h4", "h5", "h6":
+      child.extract_header(result)
+    else:
+      child.find_all_headers(result)
 
 
 proc find_all_headers(html: string): seq[Header_info] =
