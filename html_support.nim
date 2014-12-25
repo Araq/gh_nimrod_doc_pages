@@ -259,7 +259,7 @@ proc find_all_headers(html: string): seq[Header_info] =
   node.find_all_headers(result)
 
 
-proc tocify_markdown*(filename: string) =
+proc tocify_markdown*(filename: string) {.raises: [].} =
   ## Reads `filename` HTML and generates its index companion file.
   ##
   ## The `filename` usually contains the HTML of generated markdown code but in
@@ -269,15 +269,24 @@ proc tocify_markdown*(filename: string) =
   ## The format of the index file will conform to `Nim's idx file format
   ## <http://nim-lang.org/docgen.html#index-idx-file-format>`_. If there is any
   ## error or the index file ends up empty, the index file won't be created.
-  var toc = filename.read_file.find_all_headers
-  if toc.len < 1:
+  template abort() =
+    echo "Error tocifying markdown: " & get_current_exception_msg()
     return
+
+  var toc: seq[Header_info]
+  try:
+    toc = filename.read_file.find_all_headers
+    if toc.len < 1:
+      return
+  except E_Base:
+    abort()
 
   var
     prefix = filename
     GENERATOR: TRstGenerator
 
-  GENERATOR.init_rst_generator(out_html, filename)
+  try: GENERATOR.init_rst_generator(out_html, filename)
+  except EOverflow, EInvalidValue: abort()
 
   if toc[0].level == 1:
     # Special first entry reserved for the title.
@@ -288,8 +297,10 @@ proc tocify_markdown*(filename: string) =
     GENERATOR.set_index_term(href, text, level.repeat_char & text)
 
   let idx = filename.change_file_ext("idx")
-  idx.remove_file
-  GENERATOR.write_index_file(idx)
+  try: idx.remove_file
+  except EOS: abort()
+  try: GENERATOR.write_index_file(idx)
+  except E_Base: abort()
 
 
 proc test() =
