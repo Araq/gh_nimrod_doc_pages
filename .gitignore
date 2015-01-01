@@ -5,6 +5,7 @@
 nimcache/
 
 # Full paths.
+/.sybil_systems
 /README.html
 /docs/changes.html
 /docs/release_steps.html
