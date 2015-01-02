@@ -4,7 +4,7 @@ import
 
 let
   rst_files = concat(glob("*.rst"), glob("docs"/"*rst"),
-    glob("docs"/"dist"/"*rst"))
+    glob("docs"/"dist"/"*rst"), glob("vagrant_linux"/"*.rst"))
 
 iterator all_html_files(files: seq[string]): tuple[src, dest: string] =
   for filename in files:

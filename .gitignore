@@ -2,6 +2,7 @@
 *.exe
 *.swp
 .DS_Store
+.vagrant/
 nimcache/
 
 # Full paths.
@@ -16,3 +17,5 @@ nimcache/
 /license.html
 /nakefile
 /sorting_lists
+/vagrant_linux/*/bootstrap.sh
+/vagrant_linux/readme.html
