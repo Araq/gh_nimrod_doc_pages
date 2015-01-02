@@ -247,7 +247,11 @@ proc process_commandline() =
 
   if G.params.options.has_key(param_version[0]):
     echo "Versions:"
-    echo "\tgh_nimrod_doc_pages: ", version_str
+    when defined(release):
+      const suffix = "-release"
+    else:
+      const suffix = "-debug"
+    echo "\tgh_nimrod_doc_pages: ", version_str & suffix
     echo "\tmidnight_dynamite: ", midnight_dynamite.version_str,
       " (howedown ", hoedown_version_str(), ")"
     echo "\tlazy_rest: ", lazy_rest.version_str

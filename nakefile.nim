@@ -1,5 +1,10 @@
 import
-  bb_nake, bb_system, lazy_rest, sequtils, osproc, bb_os
+  bb_nake, bb_system, lazy_rest, sequtils, osproc, bb_os, gh_nimrod_doc_pages
+
+
+const
+  pkg_name = "gh_nimrod_doc_pages"
+  bin_name = pkg_name & "-" & gh_nimrod_doc_pages.version_str & "-binary"
 
 
 let
@@ -80,6 +85,60 @@ proc install_nimble() =
 proc web() = switch_to_gh_pages()
 proc postweb() = switch_back_from_gh_pages()
 
+proc run_vagrant() =
+  ## Takes care of running vagrant and running build_platform_dist *there*.
+  run_vagrant("""
+    nimble build
+    nake platform_dist
+    """)
+
+
+proc build_platform_dist() =
+  ## Runs some compilation tasks to produce the binary dists.
+  let
+    platform = "-" & host_os & "-" & host_cpu
+    dist_bin_dir = dist_dir/bin_name & platform
+    release_bin = dist_bin_dir/pkg_name
+    debug_bin = dist_bin_dir/pkg_name & "d"
+
+  # Cleanup.
+  dist_dir.remove_dir
+  dist_bin_dir.create_dir
+
+  # Build the binary.
+  dire_shell "nimble build"
+  nimcache_dir.remove_dir
+  dire_shell(nim_exe, "c -d:release -o:" & release_bin, pkg_name)
+  nimcache_dir.remove_dir
+  test_shell(nim_exe, "c -d:debug -o:" & debug_bin, pkg_name)
+
+  # Zip the binary and remove the uncompressed files.
+  pack_dir(dist_bin_dir)
+
+
+proc md5() =
+  ## Inspects files in zip and generates markdown for github.
+  let templ = """
+Add the following notes to the release info:
+
+Compiled with Nimrod version https://github.com/Araq/Nim/commit/$$1 or https://github.com/Araq/Nimrod/tree/v0.9.6.
+
+[See the changes
+log](https://github.com/gradha/gh_nimrod_doc_pages/blob/v$1/docs/changes.rst).
+
+Binary MD5 checksums:""" % [gh_nimrod_doc_pages.version_str]
+  show_md5_for_github(templ)
+
+
+proc build_dist() =
+  ## Runs all the distribution tasks and collects everything for upload.
+  doc()
+  build_platform_dist()
+  run_vagrant()
+  collect_vagrant_dist()
+  md5()
+
+
 task "clean", "Removes temporal files, mostly.": clean()
 task "doc", "Generates HTML docs.": doc()
 task "i", "Uses nimble to force install package locally.": install_nimble()
@@ -88,6 +147,10 @@ if sybil_witness.exists_file:
   task "web", "Renders gh-pages, don't use unless you are gradha.": web()
   task "check_doc", "Validates rst format with python.": validate_doc()
   task "postweb", "Gradha uses this like portals, don't touch!": postweb()
+  task "vagrant", "Runs vagrant to build linux binaries": run_vagrant()
+  task "platform_dist", "Build dist for current OS": build_platform_dist()
+  task "dist", "Performs distribution tasks for all platforms": build_dist()
+  task "md5", "Computes md5 of files found in dist subdirectory.": md5()
 
 when defined(macosx):
   task "doco", "Like 'doc' but also calls 'open' on generated HTML.": doco()

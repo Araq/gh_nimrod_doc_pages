@@ -8,6 +8,7 @@ nimcache/
 # Full paths.
 /.sybil_systems
 /README.html
+/dist/
 /docs/changes.html
 /docs/release_steps.html
 /footest.html
@@ -18,4 +19,5 @@ nimcache/
 /nakefile
 /sorting_lists
 /vagrant_linux/*/bootstrap.sh
+/vagrant_linux/*/software/
 /vagrant_linux/readme.html
