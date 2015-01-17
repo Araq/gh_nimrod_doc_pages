@@ -25,7 +25,7 @@ More examples can be found linked from http://gradha.github.io.
 Changes
 =======
 
-This is development version 0.2.3. For a list of changes see the
+This is stable version 0.2.4. For a list of changes see the
 `docs/changes.rst file <docs/changes.rst>`_.
 
 

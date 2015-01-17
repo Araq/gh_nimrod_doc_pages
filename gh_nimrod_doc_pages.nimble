@@ -1,6 +1,6 @@
 [Package]
 name         = "gh_nimrod_doc_pages"
-version      = "0.2.3"
+version      = "0.2.4"
 author       = "Grzegorz Adam Hankiewicz"
 description  = "Generates a GitHub documentation website for Nim projects."
 license      = "MIT"

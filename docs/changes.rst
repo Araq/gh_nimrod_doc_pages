@@ -5,7 +5,7 @@ gh_nimrod_doc_pages changes log
 Changes log for `gh_nimrod_doc_pages
 <https://github.com/gradha/gh_nimrod_doc_pages/>`_.
 
-v0.2.3 ????-??-??
+v0.2.4 2015-01-17
 -----------------
 
 * `Recognises .markdown extension too
