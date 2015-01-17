@@ -1,6 +1,10 @@
 *.swp
 .DS_Store
+nimcache/
+
+/.sybil_systems
 /README.html
 /external/
 /gh_nimrod_doc_pages
-nimcache/
+/nakefile
+/vagrant_linux/
