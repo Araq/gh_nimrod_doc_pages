@@ -288,6 +288,8 @@ proc process_commandline() =
   # Patch the global variables to always contain meaningful values.
   if G.config_path.len > 0:
     G.config_dir = G.config_path.parent_dir
+    if G.config_dir.len < 1:
+      G.config_dir = "."
   else:
     G.config_dir = "."
     G.config_path = config_filename
