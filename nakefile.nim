@@ -88,13 +88,17 @@ proc postweb() = switch_back_from_gh_pages()
 proc run_vagrant() =
   ## Takes care of running vagrant and running build_platform_dist *there*.
   run_vagrant("""
-    nimble build
+    nimble build -y
     nake platform_dist
     """)
 
 
 proc build_platform_dist() =
   ## Runs some compilation tasks to produce the binary dists.
+  ##
+  ## This also runs the documentation since HTML files will be embedded in the
+  ## binary packages.
+  doc()
   let
     platform = "-" & host_os & "-" & host_cpu
     dist_bin_dir = dist_dir/bin_name & platform
@@ -138,7 +142,6 @@ Binary MD5 checksums:""" % [gh_nimrod_doc_pages.version_str]
 
 proc build_dist() =
   ## Runs all the distribution tasks and collects everything for upload.
-  doc()
   build_platform_dist()
   run_vagrant()
   collect_vagrant_dist()
