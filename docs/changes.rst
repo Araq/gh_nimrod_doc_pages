@@ -50,6 +50,8 @@ v0.2.3 ????-??-??
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/6>`_.
 * `Fixed crash passing config.ini file directly instead of directory
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/43>`_.
+* `Fixed paths in theindex to subdirectory modules
+  <https://github.com/gradha/gh_nimrod_doc_pages/issues/44>`_.
 
 v0.2.2 2014-06-18
 -----------------

@@ -4,7 +4,7 @@
 
 import argument_parser, bb_os, tables, strutils, osproc, inidata, sequtils,
   bb_system, sets, algorithm, sorting_lists, midnight_dynamite, html_support,
-  globals_for_gh, lazy_rest
+  globals_for_gh, lazy_rest, lazy_rest_pkg/lrstgen
 
 when defined(windows):
   import windows
@@ -128,6 +128,9 @@ const
   api_list_end = "gh_nimrod_doc_pages_api_list_end" ## Html end marker.
 
   default_scan_files_dir = "."
+
+  theindex_html = "theindex.html"
+  theindex_template_string = "zm2aMYlBlNoascuX"
 
 
 proc update_html(ini: Ini_config): string =
@@ -476,11 +479,26 @@ proc build_index(directory: string): string =
   ## generated index file.
   result = ""
   let
-    dest = directory/"theindex.html"
+    dest = directory/theindex_html
     dir = if directory.len < 1: "." else: directory
-  if nimrod("buildIndex", dir, dest):
-    if dest.exists_file:
-      result = dest
+    data = merge_indexes(dir)
+  assert data.len > 0
+
+  # Pregenerate the index file from a nearly empty rst template with a keyword.
+  let
+    rst_template = """
+=====
+Index
+=====
+
+""" & theindex_template_string
+    html_template = rst_template.safe_rst_string_to_html(theindex_html)
+    html = html_template.replace(theindex_template_string, data)
+
+  assert html.len > 0
+  assert html.find(theindex_template_string) < 0
+  dest.write_file(html)
+  result = dest
 
 
 proc extract_unique_directories(filenames: seq[string],
