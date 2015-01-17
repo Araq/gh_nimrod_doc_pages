@@ -1,4 +1,5 @@
-import parsecfg, strutils, streams, tables, sequtils, algorithm, global_patches
+import parsecfg, strutils, streams, tables, sequtils, algorithm,
+  bb_system
 
 type
   Section* = object ## Contains the parameters for a section in the .ini file.
@@ -9,8 +10,8 @@ type
     branches*: seq[string] ## Not nil. Branches to regenerate.
 
     multiple_indices*: bool ## When true, the user wants multiple theindex.html.
-    doc2_modules*: seq[string] ## Nil or files to run through doc2 command.
-    doc_modules*: seq[string] ## Not nil. Files to run through doc command.
+    doc_modules*: seq[string] ## Nil or files to run through doc command.
+    doc2_modules*: seq[string] ## Not nil. Files to run through doc2 command.
     md_files*: seq[string] ## Nil or files to run through md library.
     rst_files*: seq[string] ## Nil or files to be rested.
     link_html*: seq[string] ## Nil or files to be linked in the index.
@@ -31,8 +32,8 @@ proc init(X: var Section) =
   X.doc_dir = ""
   X.ignore_tags = nil
   X.branches = @[]
-  X.doc2_modules = nil
-  X.doc_modules = @[]
+  X.doc_modules = nil
+  X.doc2_modules = @[]
   X.md_files = nil
   X.rst_files = nil
   X.link_html = nil
@@ -123,10 +124,10 @@ proc combine*(ini: Ini_config; target: string): Section =
   result.ignore_tags = ini.default.ignore_tags
   result.branches = ini.default.branches
   # Patch up the following variables.
-  if result.doc_modules.len < 1 and ini.default.doc_modules.len > 0:
-    result.doc_modules = ini.default.doc_modules
-  if result.doc2_modules.is_nil and ini.default.doc2_modules.not_nil:
+  if result.doc2_modules.len < 1 and ini.default.doc2_modules.len > 0:
     result.doc2_modules = ini.default.doc2_modules
+  if result.doc_modules.is_nil and ini.default.doc_modules.not_nil:
+    result.doc_modules = ini.default.doc_modules
   if result.md_files.is_nil and ini.default.md_files.not_nil:
     result.md_files = ini.default.md_files
   if result.rst_files.is_nil and ini.default.rst_files.not_nil:
@@ -173,9 +174,9 @@ proc add(section: var Section; event: TCfgEvent; parser: TCfgParser) =
   of "docdir": section.doc_dir = event.value.strip
   of "ignoretags": section.ignore_tags = parse_lines(event.value)
   of "branches": section.branches.parse_lines(event.value)
-  of "doc2modules": section.doc2_modules = parse_lines(event.value)
+  of "doc2modules": section.doc2_modules.parse_lines(event.value)
   of "mdfiles": section.md_files = parse_lines(event.value)
-  of "docmodules": section.doc_modules.parse_lines(event.value)
+  of "docmodules": section.doc_modules = parse_lines(event.value)
   of "rstfiles": section.rst_files = parse_lines(event.value)
   of "linkhtml": section.link_html = parse_lines(event.value)
   of "multipleindices": section.multiple_indices = true

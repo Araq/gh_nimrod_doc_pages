@@ -1,4 +1,5 @@
-import htmlparser, xmltree, strtabs, os, strutils, global_patches, streams
+import htmlparser, xmltree, strtabs, os, strutils, bb_system, streams,
+  globals_for_gh, macros, lazy_rest_pkg/lrstgen
 
 ## gh_nimrod_doc_pages html support files.
 ##
@@ -14,6 +15,7 @@ import htmlparser, xmltree, strtabs, os, strutils, global_patches, streams
 type
   First_tag = tuple[pos: int, tag: string]
   pair = tuple[src, dest: string] # Holds text replacement pairs.
+  Header_info* = tuple[level: int, href, text: string]
 
 
 proc post_process_html_local_links(html: PXmlNode, filename: string): bool =
@@ -34,13 +36,14 @@ proc post_process_html_local_links(html: PXmlNode, filename: string): bool =
     if not href.is_nil:
       let (dir, name, ext) = href.split_file
       case ext.to_lower
-      of ".rst", ".md", ".txt":
+      of ".rst", md_extensions[0], md_extensions[1], ".txt":
+        when md_extensions.len != 2: {.fatal: "Missing case checks".}
         let
           rel_path = href.change_file_ext("html")
           test_path = filename.split_file.dir/rel_path
         if test_path.exists_file:
           a.attrs["href"] = rel_path
-          RESULT = true
+          result = true
 
 
 proc find_local_links(html: PXmlNode, filename: string): seq[pair] =
@@ -60,7 +63,8 @@ proc find_local_links(html: PXmlNode, filename: string): seq[pair] =
     if not href.is_nil:
       let (dir, name, ext) = href.split_file
       case ext.to_lower
-      of ".rst", ".md", ".txt":
+      of ".rst", md_extensions[0], md_extensions[1], ".txt":
+        when md_extensions.len != 2: {.fatal: "Missing case checks".}
         let
           rel_path = href.change_file_ext("html")
           test_path = filename.split_file.dir/rel_path
@@ -105,7 +109,7 @@ proc find_href(s: string; pos: int; substr: string): int =
   ## length an `href` attribute is found.
   result = pos
   while result >= 0:
-    result = s.find(substr, pos)
+    result = s.find(substr, result)
     if result > 0:
       # Make sure in the previous substring there is an href=
       let prefix = s[max(0, result - 8) .. result].to_lower
@@ -179,6 +183,124 @@ proc post_process_html_local_links*(filename: string) =
 
     filename.write_file(buf)
     echo "Patching local links in ", filename
+
+
+proc recursive_text*(n: PXmlNode): string =
+  ## Extracts all possible inner text ignoring tags.
+  ##
+  ## The stdlib innerText proc doesn't deal with headers containing other inner
+  ## tags like ``<code>``.
+  result = ""
+  if n.kind != xnElement:
+    return
+
+  for child in n.items:
+    if child.kind in {xnText, xnEntity}:
+      result.add(child.text)
+    else:
+      result.add(child.recursive_text)
+
+
+proc extract_header(n: PXmlNode, result: var seq[Header_info]) =
+  ## Extracts from header node `n` the identifier and adds it to `result`.
+  ##
+  ## If the node can't be extracted safely `result` won't be changed. Empty
+  ## headers won't be added either.
+  assert n.kind == xnElement
+  if n.attrs.is_nil:
+    return
+
+  let text = n.recursive_text.strip
+  if text.len < 1:
+    return
+
+  var level = 0
+  case n.tag
+  of "h1": level = 1
+  of "h2": level = 2
+  of "h3": level = 3
+  of "h4": level = 4
+  of "h5": level = 5
+  of "h6": level = 6
+  else: return
+
+  if not n.attrs.has_key("id"):
+    return
+
+  result.add((level, n.attrs["id"], text))
+
+
+proc find_all_headers*(n: PXmlNode, result: var seq[Header_info]) =
+  ## Iterates over all the children of `n` returning those matching `h?`.
+  ##
+  ## Found headers will be appended to the `result` sequence, which can't be
+  ## nil or the proc will crash. The returned header level info is equal to the
+  ## tag level (``h1`` => 1).
+  assert result.not_nil
+  assert n.kind == xnElement
+
+  for child in n.items():
+    if child.kind != xnElement:
+      continue
+
+    case child.tag
+    of "h1", "h2", "h3", "h4", "h5", "h6":
+      child.extract_header(result)
+    else:
+      child.find_all_headers(result)
+
+
+proc find_all_headers(html: string): seq[Header_info] =
+  ## Wraps extraction of headers from an HTML file.
+  ##
+  ## Returns the found headers or the empty list.
+  let node = html.new_string_stream.parse_html
+  result = @[]
+  node.find_all_headers(result)
+
+
+proc tocify_markdown*(filename: string) {.raises: [].} =
+  ## Reads `filename` HTML and generates its index companion file.
+  ##
+  ## The `filename` usually contains the HTML of generated markdown code but in
+  ## theory this could work with anything. The generated index will be written
+  ## to the IdxExt variant.
+  ##
+  ## The format of the index file will conform to `Nim's idx file format
+  ## <http://nim-lang.org/docgen.html#index-idx-file-format>`_. If there is any
+  ## error or the index file ends up empty, the index file won't be created.
+  template abort() =
+    echo "Error tocifying markdown: " & get_current_exception_msg()
+    return
+
+  var toc: seq[Header_info]
+  try:
+    toc = filename.read_file.find_all_headers
+    if toc.len < 1:
+      return
+  except E_Base:
+    abort()
+
+  var
+    prefix = filename
+    GENERATOR: TRstGenerator
+
+  try: GENERATOR.init_rst_generator(out_html, filename)
+  except EOverflow, EInvalidValue: abort()
+
+  if toc[0].level == 1:
+    # Special first entry reserved for the title.
+    GENERATOR.set_index_term("", toc[0].text)
+    system.delete(toc, 0)
+
+  for level, href, text in toc.items:
+    GENERATOR.set_index_term(href, text, level.repeat_char & text)
+
+  let idx = filename.change_file_ext("idx")
+  try: idx.remove_file
+  except EOS: abort()
+  try: GENERATOR.write_index_file(idx)
+  except E_Base: abort()
 
 
 proc test() =

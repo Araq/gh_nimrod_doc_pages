@@ -2,9 +2,9 @@
 ##
 ## For project information see https://github.com/gradha/gh_nimrod_doc_pages.
 
-import argument_parser, os, tables, strutils, osproc, inidata, sequtils,
-  global_patches, sets, algorithm, packages/docutils/rstgen, sorting_lists,
-  midnight_dynamite, html_support
+import argument_parser, bb_os, tables, strutils, osproc, inidata, sequtils,
+  bb_system, sets, algorithm, sorting_lists, midnight_dynamite, html_support,
+  globals_for_gh, lazy_rest, lazy_rest_pkg/lrstgen
 
 when defined(windows):
   import windows
@@ -63,10 +63,7 @@ const
   name = "gh_nimrod_doc_pages"
   config_filename = name & ".ini"
 
-  version_str* = name & "-0.2.2" ## Program version as a string. \
-  ## The format is ``string-digit(.digit)*``.
-
-  version_int* = (major: 0, minor: 2, maintenance: 2) ## \
+  version_int* = (major: 0, minor: 2, maintenance: 4) ## \
   ## Program version as an integer tuple.
   ##
   ## Major version changes mean significant new features or a break in
@@ -79,6 +76,13 @@ const
   ##
   ## Maintenance version changes mean bugfixes or non commandline changes.
 
+  version_str* = $version_int.major & "." & $version_int.minor & "." &
+    $version_int.maintenance ## \
+    ## Program version as a string.
+    ##
+    ## The format is ``digit(.digit)*``.
+
+
   git_ssh_prefix = "git@github.com:" ## Used to detect origin information.
   git_https_prefix = "https://github.com/" ## Detects origin url.
   git_suffix = ".git" ## Mandatory at end of origin url.
@@ -89,7 +93,7 @@ const
   help_help = "Displays commandline help and exits."
 
   param_version = @["-v", "--version"]
-  help_version = "Displays the current version and exists."
+  help_version = "Displays the current versions and exists."
 
   param_config = @["-c", "--config"]
   help_config = "Specify a path to a specific configuration ini or a " &
@@ -122,6 +126,11 @@ const
 
   api_list_start = "gh_nimrod_doc_pages_api_list_start" ## Html start marker.
   api_list_end = "gh_nimrod_doc_pages_api_list_end" ## Html end marker.
+
+  default_scan_files_dir = "."
+
+  theindex_html = "theindex.html"
+  theindex_template_string = "zm2aMYlBlNoascuX"
 
 
 proc update_html(ini: Ini_config): string =
@@ -217,8 +226,9 @@ proc process_commandline() =
   ##
   ## It also initializes fields like `git_exe` or `nimrod_exe`.
   G.git_exe = "git".find_exe
-  G.nimrod_exe = "nimrod".find_exe
-  G.md_params.init
+  G.nimrod_exe = "nim".find_exe
+  if G.nimrod_exe.len < 1: G.nimrod_exe = "nimrod".find_exe
+  G.md_params.init(render_nesting_level = 6)
 
   var PARAMS: seq[Tparameter_specification] = @[]
   PARAMS.add(new_parameter_specification(PK_HELP,
@@ -235,11 +245,19 @@ proc process_commandline() =
 
   proc abort(message: string) =
     echo message & "\n"
-    params.echo_help
+    PARAMS.echo_help
     quit(QuitFailure)
 
   if G.params.options.has_key(param_version[0]):
-    echo "Version ", version_str, "."
+    echo "Versions:"
+    when defined(release):
+      const suffix = "-release"
+    else:
+      const suffix = "-debug"
+    echo "\tgh_nimrod_doc_pages: ", version_str & suffix
+    echo "\tmidnight_dynamite: ", midnight_dynamite.version_str,
+      " (howedown ", hoedown_version_str(), ")"
+    echo "\tlazy_rest: ", lazy_rest.version_str
     quit()
 
   if G.params.options.has_key(param_boot[0]):
@@ -273,6 +291,8 @@ proc process_commandline() =
   # Patch the global variables to always contain meaningful values.
   if G.config_path.len > 0:
     G.config_dir = G.config_path.parent_dir
+    if G.config_dir.len < 1:
+      G.config_dir = "."
   else:
     G.config_dir = "."
     G.config_path = config_filename
@@ -332,12 +352,15 @@ proc obtain_targets_to_work_on(ini: Ini_config):
       available_branches.contains(it))
 
 
-proc scan_files(extension: string, dir = "."): seq[string] =
+proc scan_files(extensions: openarray[string],
+    dir = default_scan_files_dir): seq[string] =
   ## Returns the relative paths to files found with the specified extension.
+  ##
+  ## Pass the extensions lower case. All extensions have to start with a dot.
   ##
   ## Hmm... seems like making this an iterator which yields the path crashes
   ## the generated runtime code...
-  assert extension.not_nil and extension[0] == '.'
+  for ext in extensions: assert ext[0] == '.'
   result = @[]
 
   for kind, path in dir.walk_dir:
@@ -348,15 +371,23 @@ proc scan_files(extension: string, dir = "."): seq[string] =
       continue
     case kind
     of pcFile, pcLinkToFile:
-      if good_path.split_file.ext == extension:
-        result.add(good_path)
+      let good_ext = good_path.split_file.ext.to_lower
+      for extension in extensions:
+        if good_ext == extension:
+          result.add(good_path)
+          break
     of pcDir, pcLinkToDir:
-      for recursive in extension.scan_files(path):
+      for recursive in extensions.scan_files(path):
         result.add(recursive)
 
 
+proc scan_files(extension: string, dir = default_scan_files_dir): seq[string] =
+  ## Wrapper around the version accepting a sequence.
+  result = scan_files([extension], dir)
+
+
 proc nimrod(command, src: string; dest = ""): bool =
-  ## Runs Nimrod's `command` from `src` to `dest`.
+  ## Runs Nim's `command` from `src` to `dest`.
   ##
   ## Returns true if everything went ok, false if the file was skipped. The
   ## `dest` parameter can't be nil, but if you pass the empty string the the
@@ -369,7 +400,7 @@ proc nimrod(command, src: string; dest = ""): bool =
   let
     out_param = if dest.len > 0: "--out:" & dest else: ""
     command = G.nimrod_exe & " " & command &
-      " --verbosity:0 --index:on " & out_param & " " & src
+      " --verbosity:0 --skipProjCfg --index:on " & out_param & " " & src
     (output, exit) = execCmdEx(command)
 
   if exit != 0:
@@ -387,29 +418,40 @@ proc nimrod(command, src: string; dest = ""): bool =
 proc md(input_md: string): string =
   ## Runs `input_md` through the default Midnight Dynamite conversion.
   ##
-  ## Returns the empty string or the relative path to the generated file.
+  ## Returns the empty string or the relative path to the generated file. If
+  ## possible an index file is generated too.
   let dest = input_md.change_file_ext("html")
   dest.remove_file
   G.md_params.render_file(input_md, dest)
   if dest.exists_file:
     result = dest
+    tocify_markdown(dest)
   else:
     result = ""
 
 
 proc rst(input_rst: string): string =
-  ## Runs `input_rst` through Nimrod's rst2html command.
+  ## Runs `input_rst` through Nim's rst2html command.
   ##
   ## Returns the empty string or the relative path to the generated file.
-  let dest = input_rst.change_file_ext("html")
-  if nimrod("rst2html", input_rst, dest):
-    result = dest
-  else:
+  var
+    ERRORS: seq[string] = @[]
+    config = new_rst_config()
+  config[lrc_render_write_index_auto] = "t"
+  let
+    dest = input_rst.change_file_ext("html")
+    html = input_rst.safe_rst_file_to_html(ERRORS.addr, config)
+  if ERRORS.len > 0:
+    echo "Error processing ", input_rst
+    for error in ERRORS: echo error
     result = ""
+  else:
+    dest.write_file(html)
+    result = dest
 
 
 proc doc1(input_nim: string): string =
-  ## Runs `input_nim` through Nimrod's doc command.
+  ## Runs `input_nim` through Nim's doc command.
   ##
   ## Returns the empty string or the relative path to the generated file.
   let dest = input_nim.change_file_ext("html")
@@ -420,7 +462,7 @@ proc doc1(input_nim: string): string =
 
 
 proc doc2(input_nim: string): string =
-  ## Runs `input_nim` through Nimrod's doc2 command.
+  ## Runs `input_nim` through Nim's doc2 command.
   ##
   ## Returns the empty string or the relative path to the generated file.
   let dest = input_nim.change_file_ext("html")
@@ -437,11 +479,26 @@ proc build_index(directory: string): string =
   ## generated index file.
   result = ""
   let
-    dest = directory/"theindex.html"
+    dest = directory/theindex_html
     dir = if directory.len < 1: "." else: directory
-  if nimrod("buildIndex", dir, dest):
-    if dest.exists_file:
-      result = dest
+    data = merge_indexes(dir)
+  assert data.len > 0
+
+  # Pregenerate the index file from a nearly empty rst template with a keyword.
+  let
+    rst_template = """
+=====
+Index
+=====
+
+""" & theindex_template_string
+    html_template = rst_template.safe_rst_string_to_html(theindex_html)
+    html = html_template.replace(theindex_template_string, data)
+
+  assert html.len > 0
+  assert html.find(theindex_template_string) < 0
+  dest.write_file(html)
+  result = dest
 
 
 proc extract_unique_directories(filenames: seq[string],
@@ -482,8 +539,8 @@ proc extract_unique_directories(filenames: seq[string],
   var P = 0
   while P < TEMP.len:
     let
-      prefix1 = TEMP[P] & dir_sep
-      prefix2 = TEMP[P] & alt_sep
+      prefix1 = TEMP[P] & DirSep
+      prefix2 = TEMP[P] & AltSep
     TEMP = TEMP.filter_it(
       (not it.starts_with(prefix1)) and (not it.starts_with(prefix2)))
     P.inc
@@ -509,17 +566,19 @@ proc collapse_idx(base_dir: string) =
   ## The files are collapsed to the base directory using the semi full relative
   ## path replacing path separators with underscores. The contents of the idx
   ## files are modified to contain the relative path.
-  let base_dir = if base_dir.len < 1: "." else: base_dir
-  for path in base_dir.dot_walk_dir({pcFile, pcLinkToFile, pcDir, pcLinkToDir}):
+  let
+    base_dir = if base_dir.len < 1: "." else: base_dir
+    filter = {pcFile, pcLinkToFile, pcDir, pcLinkToDir}
+  for path in base_dir.dot_walk_dir_rec(filter):
     let (dir, name, ext) = path.split_file
     # Ignore files which are not an index.
-    if ext != index_ext: continue
+    if ext != IndexExt: continue
     # Ignore files found in the base_dir.
     if dir.same_file(base_dir): continue
     # Extract the parent paths.
     let dest = base_dir/(name & ext)
     var relative_dir = dir[base_dir.len .. <dir.len]
-    if relative_dir[0] == dir_sep or  relative_dir[0] == alt_sep:
+    if relative_dir[0] == DirSep or relative_dir[0] == AltSep:
       relative_dir.delete(0, 0)
     assert(not relative_dir.is_absolute)
 
@@ -527,12 +586,21 @@ proc collapse_idx(base_dir: string) =
     dest.write_file(mangle_idx(path, relative_dir))
 
 
+proc scan_nim_files(): seq[string] =
+  ## Returns a list of Nim files to process.
+  ##
+  ## This is a wrapper around scan_files() which removes nakefile.nim files
+  ## from the result. The proc will return always a sequence, maybe empty.
+  result = filter_it(nim_extensions.scan_files,
+    it.extract_filename.to_lower != "nakefile.nim")
+
+
 proc generate_docs(s: Section; src_dir: string): seq[string] =
   ## Generates in `src_dir` documentation according to the `s` configuration.
   ##
   ## Returns the list of relative paths to the generated HTML files.
   assert src_dir.not_nil and src_dir.len > 0
-  assert s.doc_modules.not_nil
+  assert s.doc2_modules.not_nil
   result = @[]
 
   # Save the src_dir too, changing to it to get relative paths.
@@ -547,21 +615,21 @@ proc generate_docs(s: Section; src_dir: string): seq[string] =
       if out_html.len > 0:
         result.add(out_html)
 
-  # Process doc2 files, if any specified.
-  var files = if s.doc2_modules.is_nil: scan_files(".nim") else: s.doc2_modules
-  loop_files(doc2)
-  # Process specified doc files.
-  files = s.doc_modules
+  # Process doc files, if any specified.
+  var files = if s.doc_modules.is_nil: scan_nim_files() else: s.doc_modules
   loop_files(doc1)
+  # Process specified doc2 files.
+  files = s.doc2_modules
+  loop_files(doc2)
   # Markdown files.
-  files = if s.md_files.is_nil: scan_files(".md") else: s.md_files
+  files = if s.md_files.is_nil: md_extensions.scan_files else: s.md_files
   loop_files(md)
   # And finally rst files.
-  files = if s.rst_files.is_nil: scan_files(".rst") else: s.rst_files
+  files = if s.rst_files.is_nil: rst_extensions.scan_files else: s.rst_files
   loop_files(rst)
 
   # Post process links of generated html files.
-  for html_file in scan_files(".html"):
+  for html_file in html_extensions.scan_files:
     html_file.post_process_html_local_links
 
   # Generate theindex.html from idx files.
@@ -625,6 +693,24 @@ proc create_clone_dir() =
     quit "Can't work with existing dir '" & full & "' already there!"
   full.create_dir
 
+  when defined(macosx):
+    ## Calls a macosx command on the directory to exclude it from backups.
+    ##
+    ## The macosx tmutil command is invoked to mark the specified path as an
+    ## item to be excluded from time machine backups. If a path already exists
+    ## with files before excluding it, newer files won't be added to the
+    ## directory, but previous files won't be removed from the backup until the
+    ## user deletes that directory.
+    ##
+    ## The whole proc is optional and will ignore all kinds of errors. The only
+    ## way to be sure that it works is to call ``tmutil isexcluded path``.
+    try:
+      var p = startProcess("/usr/bin/tmutil", args = ["addexclusion", full])
+      discard p.waitForExit
+      p.close
+    except E_Base, EOS:
+      discard
+
 
 proc validate_target_html(filename: string): bool =
   ## Makes sure `filename` is valid and contains necessary markers.
@@ -643,7 +729,7 @@ proc validate_target_html(filename: string): bool =
   if first < 1: abort "doesn't contain the required " &
     "starting marker '" & api_list_start & "'."
 
-  let eol = html.find(newlines, first)
+  let eol = html.find(NewLines, first)
   if eol < 0: abort "doesn't contain markers on different lines."
 
   if html.find(api_list_end, eol) < 0: abort "doesn't contain the required " &
@@ -689,7 +775,7 @@ proc generate_html_links(ini: Ini_config;
       current_dir = get_current_dir()
     finally: current_dir.set_current_dir
     base.set_current_dir
-    for path in dot_walk_dir("."):
+    for path in dot_walk_dir_rec("."):
       assert path.len > 2
       if path.split_file.ext.to_lower == ".html":
         PATHS.add(path[2 .. <path.len])
