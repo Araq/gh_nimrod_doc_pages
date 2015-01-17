@@ -112,6 +112,12 @@ proc build_platform_dist() =
   nimcache_dir.remove_dir
   test_shell(nim_exe, "c -d:debug -o:" & debug_bin, pkg_name)
 
+  # Copy the previously generated quick readme and usage guides.
+  const quick_readme = "docs"/"dist"/"gh_nimrod_doc_pages.html"
+  quick_readme.cp(dist_bin_dir/"readme.html")
+  const usage_guide = "docs"/"gh_nimrod_doc_pages_usage.html"
+  usage_guide.cp(dist_bin_dir/extract_filename(usage_guide))
+
   # Zip the binary and remove the uncompressed files.
   pack_dir(dist_bin_dir)
 

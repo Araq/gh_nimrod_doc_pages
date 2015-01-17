@@ -10,6 +10,7 @@ nimcache/
 /README.html
 /dist/
 /docs/changes.html
+/docs/dist/gh_nimrod_doc_pages.html
 /docs/gh_nimrod_doc_pages_usage.html
 /docs/release_steps.html
 /footest.html
