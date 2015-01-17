@@ -19,7 +19,7 @@ Here is a small sample of websites using ``gh_nimrod_doc_pages`` and their
 * https://github.com/MrJohz/appdirs (`gh-pages
   <https://github.com/MrJohz/appdirs/tree/gh-pages>`_).
 
-More examples can be found at http://gradha.github.io.
+More examples can be found linked from http://gradha.github.io.
 
 
 Changes
@@ -35,125 +35,13 @@ License
 `MIT license <license.rst>`_.
 
 
-Installing the binary
-=====================
-
-Stable version
---------------
-
-Install the `Nim compiler <http://nim-lang.org>`_. Then use `Nim's
-Nimble package manager <https://github.com/nim-lang/nimble>`_ to install::
-
-    $ nimble update
-    $ nimble install gh_nimrod_doc_pages
-    $ gh_nimrod_doc_pages -v
-
-
-Development version
--------------------
-
-Install the `Nim compiler <http://nim-lang.org>`_. Then use `Nim's
-Nimble package manager <https://github.com/nim-lang/nimble>`_ to install
-locally the github checkout::
-
-    $ git clone --recursive https://github.com/gradha/gh_nimrod_doc_pages
-    $ cd gh_nimrod_doc_pages
-    $ nimble install -y
-
-If you don't mind downloading the git repo every time you can also use Nimble
-to install the latest development version::
-
-    $ nimble update
-    $ nimble install -y gh_nimrod_doc_pages@#head
-
-
 Usage
 =====
 
-Command line switches
----------------------
-
-Usage parameters:
-
--h, --help            Displays commandline help and exits.
--v, --version         Displays the current version and exists.
--c, --config STRING   Specify a path to a specific configuration ini or a directory containing a gh_nimrod_doc_pages.ini file. You can't use this switch together with --boot.
--b, --boot            Creates missing files required for operation in the working directory, which should be inside a git tree with a branch named gh-pages. You can't use this switch together with --config.
-
-The actual interesting parameters are in the ``.ini`` file you can generate
-with the ``--boot`` switch. The template ``.ini`` is heavily commented and
-contains examples.
-
-
-Setting up a project without the gh-pages branch
-------------------------------------------------
-
-If you are a Nim coder and want to use this tool, chances are you don't use
-the ``gh-pages`` branch. These are the steps you would do to create and
-populate it:
-
-1. ``$ cd path/to/your/git/checkout``
-2. ``$ git checkout --orphan gh-pages`` to start a ``gh-pages`` branch without
-   parent.
-3. ``$ git rm -rf .`` to remove all the files carried over from whatever branch
-   you ran the previous command.
-4. ``$ gh_nimrod_doc_pages -b`` to create template files.
-5. Modify the ``gh_nimrod_doc_pages.ini`` and ``index.html`` files to suit your
-   needs. In particular, if your project doesn't have any tags yet, you need to
-   specify the ``branches`` parameter or no documentation will be generated at
-   all.
-6. ``$ gh_nimrod_doc_pages -c .`` to process the configuration file and
-   generate all the specified documentation.
-7. ``$ git add . && git commit -v`` to add and commit all the files.
-8. ``$ git push --set-upstream origin gh-pages`` to tell git you want to push
-   stuff in the future from the ``gh-pages`` branch automatically.
-
-
-Setting up a project with an existing gh-pages branch
------------------------------------------------------
-
-If you have an existing ``gh-pages`` branch the steps change slightly to
-accommodate your existing website. The steps could be something like this:
-
-1. ``$ git checkout gh-pages`` to switch to your website branch.
-2. ``$ gh_nimrod_doc_pages -b`` to create template files. Files which already
-   exist won't be overwritten.
-3. ``$ git status`` will show you the new template files, remove everything
-   except the ``gh_nimrod_doc_pages.ini`` file. Or copy the ``.ini`` somewhere
-   else and purge and checkout again the branch. The purpose is to get rid of
-   the template debris.
-4. ``$ gh_nimrod_doc_pages -c .`` will tell you if your HTML file is correctly
-   set up, explaining what markers have to be added to it. You need a pair of
-   lines, everything inside will be handled by gh_nimrod_doc_pages.
-5. After a few attempts you should have your HTML file updated and a new
-   documentation directory generated. Commit and push the changes.
-
-
-Updating generated docs in the future
--------------------------------------
-
-Once you have set up ``gh_nimrod_doc_pages`` updating documentation is very
-simple: you switch to your ``gh-pages`` branch, run ``gh_nimrod_doc_pages``,
-review the changes and commit/push.
-
-
-Typical gotchas
----------------
-
-* The default generation behaviour is to process all the repository tags and
-  ignore all branches. If you don't have tags, running the program with the
-  default parameters won't do much. Modify the ``branches`` parameter in the
-  ``gh_nimrod_doc_pages.ini`` file to make it work. Setting that to ``master``
-  usually does the trick, but it depends on how you use branches and for what.
-* During the generation of documentation from ``.nim`` files in a project
-  where there are many ``.nim`` files with specific nimrod configuration
-  parameters, the ``doc2`` command is likely not seeing those because it
-  doesn't change directory to those files. For the moment you have to use the
-  ``doc`` command instead.
-* In general the ``doc2`` program is unstable: three of the four source files
-  of this program can't be rendered with ``doc2`` because it crashes. Please
-  report these issues at `https://github.com/Araq/Nimrod/issues
-  <https://github.com/Araq/Nimrod/issues>`_.
+The installation and usage of the ``gh_nimrod_doc_pages`` binary is covered in
+the `usage guide <docs/gh_nimrod_doc_pages_usage.rst>`_. Documentation for all
+releases of this software in HTML format should be available online at
+http://gradha.github.io/gh_nimrod_doc_pages/.
 
 
 Git branches

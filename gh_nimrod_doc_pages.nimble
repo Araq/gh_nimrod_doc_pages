@@ -16,8 +16,8 @@ gh_nimrod_doc_pages.nimble
 Requires: """
 
 argument_parser >= 0.2.0
-https://github.com/gradha/badger_bits.git
+https://github.com/gradha/badger_bits.git >= 0.2.2
 lazy_rest >= 0.2.0
-midnight_dynamite >= 0.2.3
+midnight_dynamite >= 1.0.0
 
 """

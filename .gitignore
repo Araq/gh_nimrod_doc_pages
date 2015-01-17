@@ -2,11 +2,16 @@
 *.exe
 *.swp
 .DS_Store
+.vagrant/
 nimcache/
 
 # Full paths.
+/.sybil_systems
 /README.html
+/dist/
 /docs/changes.html
+/docs/dist/gh_nimrod_doc_pages.html
+/docs/gh_nimrod_doc_pages_usage.html
 /docs/release_steps.html
 /footest.html
 /gh_nimrod_doc_pages
@@ -15,3 +20,6 @@ nimcache/
 /license.html
 /nakefile
 /sorting_lists
+/vagrant_linux/*/bootstrap.sh
+/vagrant_linux/*/software/
+/vagrant_linux/readme.html
