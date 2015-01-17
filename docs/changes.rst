@@ -17,7 +17,7 @@ v0.2.4 2015-01-17
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/26>`_.
 * `Fixed infinite loop post processing html links
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/27>`_.
-* `Support markdown generation with fenced blocks extension
+* `Supports markdown generation with fenced blocks extension
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/28>`_.
 * `Replaced local patches with badger_bits
   <https://github.com/gradha/gh_nimrod_doc_pages/issues/33>`_.
