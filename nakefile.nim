@@ -82,7 +82,7 @@ proc install_nimble() =
   echo "Installed"
 
 
-proc web() = switch_to_gh_pages()
+proc web() = switch_to_gh_pages("web.ini")
 proc postweb() = switch_back_from_gh_pages()
 
 proc run_vagrant() =
