@@ -1,9 +1,9 @@
-===========================================================
-What to do for a new public release of gh_nimrod_doc_pages?
-===========================================================
+=================================
+gh_nimrod_doc_pages release steps
+=================================
 
 * Create new milestone with version number (``vXXX``) at
-  https://github.com/gradha/gh_nimrod_doc_pages/issues/milestones.
+  https://github.com/gradha/gh_nimrod_doc_pages/milestones.
 * Create new dummy issue `Release versionname` and assign to that milestone.
 * ``git flow release start versionname`` (versionname without v).
 * Update version numbers:
@@ -21,8 +21,9 @@ What to do for a new public release of gh_nimrod_doc_pages?
   ``v``). When specifying the tag message, copy and paste a text version of the
   changes log into the message. Add rst item markers.
 * Move closed issues to the release milestone.
-* ``git push origin master stable --tags``.
 * Build binaries for macosx/linux with nake ``dist`` command.
+* Archive binaries.
+* ``git push origin master stable --tags``.
 * Attach the binaries to the appropriate release at
   `https://github.com/gradha/gh_nimrod_doc_pages/releases
   <https://github.com/gradha/gh_nimrod_doc_pages/releases>`_.
@@ -48,11 +49,11 @@ What to do for a new public release of gh_nimrod_doc_pages?
 
 * Regenerate static website.
 
-  * ``git checkout gh-pages`` to switch to ``gh-pages``.
-  * ``rm `git ls-files -o` && rm -Rf docs`` to purge files from other branches
-    and force regeneration of all docs, even tags.
-  * ``gh_nimrod_doc_pages -c . && git add . && git commit``. Tag with
+  * Make sure git doesn't show changes, then run ``nake web`` and review.
+  * ``git add . && git commit``. Tag with
     `Regenerates website. Refs #release_issue`.
+  * ``./nakefile postweb`` to return to the previous branch. This also updates
+    submodules, so it is easier.
 
 * ``git push origin master stable gh-pages --tags``.
 * Close the dummy release issue.
