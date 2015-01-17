@@ -129,6 +129,9 @@ const
 
   default_scan_files_dir = "."
 
+  theindex_html = "theindex.html"
+  theindex_template_string = "zm2aMYlBlNoascuX"
+
 
 proc update_html(ini: Ini_config): string =
   ## Returns a properly fixed update_html path considering our globals.
@@ -476,12 +479,25 @@ proc build_index(directory: string): string =
   ## generated index file.
   result = ""
   let
-    dest = directory/"theindex.html"
+    dest = directory/theindex_html
     dir = if directory.len < 1: "." else: directory
     data = merge_indexes(dir)
-
   assert data.len > 0
-  dest.write_file("<html><body>" & data & "</body></html>")
+
+  # Pregenerate the index file from a nearly empty rst template with a keyword.
+  let
+    rst_template = """
+=====
+Index
+=====
+
+""" & theindex_template_string
+    html_template = rst_template.safe_rst_string_to_html(theindex_html)
+    html = html_template.replace(theindex_template_string, data)
+
+  assert html.len > 0
+  assert html.find(theindex_template_string) < 0
+  dest.write_file(html)
   result = dest
 
 
