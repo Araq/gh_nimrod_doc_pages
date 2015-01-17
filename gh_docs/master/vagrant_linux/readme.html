@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>gh_nimrod_doc_pages changes log</title>
+<title>Vagrant VirtualBox machines</title>
 <style type="text/css">
 
 body {
@@ -243,18 +243,22 @@ a.reference:hover {color: #E00000;background-color: #ffff00;display: margin;
 </head>
 <body>
 <div class="document" id="documentId">
-<h1 class="title">gh_nimrod_doc_pages changes log</h1>
-<p>Changes log for <a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/">gh_nimrod_doc_pages</a>.</p>
-
-<h1 id="v0-2-2-2014-06-18">v0.2.2 2014-06-18</h1><ul class="simple"><li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/5">Added markdown rendering support</a>.</li>
-<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/4">Added Babel stable installation</a>.</li>
-<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/17">Patched local .rst/.md links in generated HTML</a>.</li>
-<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/18">Fixed boot template title</a>.</li>
-<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/19">Detects incorrect hyperlink case</a>.</li>
-</ul>
-
-<h1 id="v0-2-0-2014-06-01">v0.2.0 2014-06-01</h1><ul class="simple"><li>Initial release.</li>
-</ul>
+<h1 class="title">Vagrant VirtualBox machines</h1>
+<p>This directory contains specifications for <a class="reference external" href="https://www.vagrantup.com">Vagrant VirtualBox machines</a>. They are used both for testing and generation of binaries for Linux.</p>
+<p>To start up a machine go into the directory and type:<pre>
+$ vagrant up</pre>
+</p>
+<p>This requires a <tt class="docutils literal"><span class="pre">bootstrap.sh</span></tt> file to be present. Since all Linux variants use the same <tt class="docutils literal"><span class="pre">bootstrap.sh</span></tt>, copy it form the parent directory.  If something fails during provisioning (the setup phase), tweak <tt class="docutils literal"><span class="pre">bootstrap.sh</span></tt> (maybe some repository URLs changed?) and run:<pre>
+$ vagrant reload --provision</pre>
+</p>
+<p>Once the machine is up, you can ssh into it with:<pre>
+$ vagrant ssh</pre>
+</p>
+<p>Stopping and destroying the virtual box instances is done with the following commands:<pre>
+$ vagrant halt
+$ vagrant destroy</pre>
+</p>
+<p>Halting is good to stop consuming resources on your host. Destroying is good if you don't plan to use the virtual machine for some time, which frees disk space. </p>
 
 <small>Last modified: 2015-01-17 19:54 UTC. Local time: 2015-01-17 20:54.
 <div id="counter"></div>
@@ -290,7 +294,7 @@ function timeDifference(current, previous) {
 
 // Timer base code taken from http://stackoverflow.com/a/11876480/172690
 window.onload = function() {
-    var fileTime = new Date(1421524443000);
+    var fileTime = new Date(1421524444000);
 	var ctr = document.getElementById("counter");
 
     function incrementCounter() {

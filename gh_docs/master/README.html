@@ -8,6 +8,11 @@
 <title>gh_nimrod_doc_pages readme</title>
 <style type="text/css">
 
+body {
+  color: black;
+  background: white;
+}
+
 span.DecNumber {color: blue}
 span.BinNumber {color: blue}
 span.HexNumber {color: blue}
@@ -20,7 +25,7 @@ span.LongStringLit {color: blue}
 span.CharLit {color: blue}
 span.EscapeSequence {color: black}
 span.Operator {color: black}
-span.Punctuation {color: black}
+span.Punctation {color: black}
 span.Comment, span.LongComment {font-style:italic; color: green}
 span.RegularExpression  {color: DarkViolet}
 span.TagStart {color: DarkViolet}
@@ -239,80 +244,71 @@ a.reference:hover {color: #E00000;background-color: #ffff00;display: margin;
 <body>
 <div class="document" id="documentId">
 <h1 class="title">gh_nimrod_doc_pages readme</h1>
-<p><strong>gh_nimrod_doc_pages</strong> is a small helper for developers who want to generate and maintain a <a class="reference external" href="https://pages.github.com">GitHub Pages website</a> using the documentation of their <a class="reference external" href="http://nimrod-lang.org">Nimrod</a> source code. Once you create a small <tt class="docutils literal"><span class="pre">.ini</span></tt> configuration file with some parameters, <tt class="docutils literal"><span class="pre">gh_nimrod_doc_pages</span></tt> will read this file and produce HTML files from all your <tt class="docutils literal"><span class="pre">.rst</span></tt>, <tt class="docutils literal"><span class="pre">.md</span></tt> and <tt class="docutils literal"><span class="pre">.nim</span></tt> files for any tags and branches you want.</p>
+<p><strong>gh_nimrod_doc_pages</strong> is a small helper for developers who want to generate and maintain a <a class="reference external" href="https://pages.github.com">GitHub Pages website</a> using the documentation of their <a class="reference external" href="http://nim-lang.org">Nim</a> source code. Once you create a small <tt class="docutils literal"><span class="pre">.ini</span></tt> configuration file with some parameters, <tt class="docutils literal"><span class="pre">gh_nimrod_doc_pages</span></tt> will read this file and produce HTML files from all your <tt class="docutils literal"><span class="pre">.rst</span></tt>, <tt class="docutils literal"><span class="pre">.md</span></tt> and <tt class="docutils literal"><span class="pre">.nim</span></tt> files for any tags and branches you want.</p>
 <p>Here is a small sample of websites using <tt class="docutils literal"><span class="pre">gh_nimrod_doc_pages</span></tt> and their <tt class="docutils literal"><span class="pre">gh-pages</span></tt> branch:</p>
 <ul class="simple"><li><a class="reference external" href="http://gradha.github.io/nimrod-ouroboros">http://gradha.github.io/nimrod-ouroboros</a>/ (<a class="reference external" href="https://github.com/gradha/nimrod-ouroboros/tree/gh-pages">gh-pages</a>).</li>
 <li><a class="reference external" href="http://gradha.github.io/seohtracker-logic">http://gradha.github.io/seohtracker-logic</a>/ (<a class="reference external" href="https://github.com/gradha/seohtracker-logic/tree/gh-pages">gh-pages</a>).</li>
 <li><a class="reference external" href="https://github.com/MrJohz/appdirs">https://github.com/MrJohz/appdirs</a> (<a class="reference external" href="https://github.com/MrJohz/appdirs/tree/gh-pages">gh-pages</a>).</li>
 </ul>
-<p>More examples can be found at <a class="reference external" href="http://gradha.github.io">http://gradha.github.io</a>.</p>
+<p>More examples can be found linked from <a class="reference external" href="http://gradha.github.io">http://gradha.github.io</a>.</p>
 
-<h1 id="changes">Changes</h1><p>This is development version 0.2.3. For a list of changes see the <a class="reference external" href="docs/changes.html">docs/changes.rst file</a>.</p>
+<h1 id="changes">Changes</h1><p>This is development version 0.2.5. For a list of changes see the <a class="reference external" href="docs/changes.html">docs/changes.rst file</a>.</p>
 
 <h1 id="license">License</h1><p><a class="reference external" href="license.html">MIT license</a>.</p>
 
-<h1 id="installing-the-binary">Installing the binary</h1>
-<h2 id="stable-version">Stable version</h2><p>Install the <a class="reference external" href="http://nimrod-lang.org">Nimrod compiler</a>. Then use <a class="reference external" href="https://github.com/nimrod-code/babel">Nimrod's Babel package manager</a> to install:<pre>
-$ babel update
-$ babel install gh_nimrod_doc_pages
-$ gh_nimrod_doc_pages -v</pre>
-</p>
-
-<h2 id="development-version">Development version</h2><p>Install the <a class="reference external" href="http://nimrod-lang.org">Nimrod compiler</a>. Then use <a class="reference external" href="https://github.com/nimrod-code/babel">Nimrod's Babel package manager</a> to install locally the github checkout:<pre>
-$ git clone --recursive https://github.com/gradha/gh_nimrod_doc_pages
-$ cd gh_nimrod_doc_pages
-$ babel install -y</pre>
-</p>
-<p>If you don't mind downloading the git repo every time you can also use Babel to install the latest development version:<pre>
-$ babel update
-$ babel install -y gh_nimrod_doc_pages@#HEAD</pre>
-</p>
-
-<h1 id="usage">Usage</h1>
-<h2 id="command-line-switches">Command line switches</h2><p>Usage parameters:</p>
-<table frame="void"><tr><th align="left">-h, --help</th><td align="left">Displays commandline help and exits.</td>
-</tr>
-<tr><th align="left">-v, --version</th><td align="left">Displays the current version and exists.</td>
-</tr>
-<tr><th align="left">-c, --config STRING</th><td align="left">Specify a path to a specific configuration ini or a directory containing a gh_nimrod_doc_pages.ini file. You can't use this switch together with --boot.</td>
-</tr>
-<tr><th align="left">-b, --boot</th><td align="left">Creates missing files required for operation in the working directory, which should be inside a git tree with a branch named gh-pages. You can't use this switch together with --config.</td>
-</tr>
-</table><p>The actual interesting parameters are in the <tt class="docutils literal"><span class="pre">.ini</span></tt> file you can generate with the <tt class="docutils literal"><span class="pre">--boot</span></tt> switch. The template <tt class="docutils literal"><span class="pre">.ini</span></tt> is heavily commented and contains examples.</p>
-
-<h2 id="setting-up-a-project-without-the-gh-pages-branch">Setting up a project without the gh-pages branch</h2><p>If you are a Nimrod coder and want to use this tool, chances are you don't use the <tt class="docutils literal"><span class="pre">gh-pages</span></tt> branch. These are the steps you would do to create and populate it:</p>
-<ol class="simple"><li><tt class="docutils literal"><span class="pre">$ cd path/to/your/git/checkout</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">$ git checkout --orphan gh-pages</span></tt> to start a <tt class="docutils literal"><span class="pre">gh-pages</span></tt> branch without parent.</li>
-<li><tt class="docutils literal"><span class="pre">$ git rm -rf .</span></tt> to remove all the files carried over from whatever branch you ran the previous command.</li>
-<li><tt class="docutils literal"><span class="pre">$ gh_nimrod_doc_pages -b</span></tt> to create template files.</li>
-<li>Modify the <tt class="docutils literal"><span class="pre">gh_nimrod_doc_pages.ini</span></tt> and <tt class="docutils literal"><span class="pre">index.html</span></tt> files to suit your needs. In particular, if your project doesn't have any tags yet, you need to specify the <tt class="docutils literal"><span class="pre">branches</span></tt> parameter or no documentation will be generated at all.</li>
-<li><tt class="docutils literal"><span class="pre">$ gh_nimrod_doc_pages -c .</span></tt> to process the configuration file and generate all the specified documentation.</li>
-<li><tt class="docutils literal"><span class="pre">$ git add . &amp;&amp; git commit -v</span></tt> to add and commit all the files.</li>
-<li><tt class="docutils literal"><span class="pre">$ git push --set-upstream origin gh-pages</span></tt> to tell git you want to push stuff in the future from the <tt class="docutils literal"><span class="pre">gh-pages</span></tt> branch automatically.</li>
-</ol>
-
-<h2 id="setting-up-a-project-with-an-existing-gh-pages-branch">Setting up a project with an existing gh-pages branch</h2><p>If you have an existing <tt class="docutils literal"><span class="pre">gh-pages</span></tt> branch the steps change slightly to accommodate your existing website. The steps could be something like this:</p>
-<ol class="simple"><li><tt class="docutils literal"><span class="pre">$ git checkout gh-pages</span></tt> to switch to your website branch.</li>
-<li><tt class="docutils literal"><span class="pre">$ gh_nimrod_doc_pages -b</span></tt> to create template files. Files which already exist won't be overwritten.</li>
-<li><tt class="docutils literal"><span class="pre">$ git status</span></tt> will show you the new template files, remove everything except the <tt class="docutils literal"><span class="pre">gh_nimrod_doc_pages.ini</span></tt> file. Or copy the <tt class="docutils literal"><span class="pre">.ini</span></tt> somewhere else and purge and checkout again the branch. The purpose is to get rid of the template debris.</li>
-<li><tt class="docutils literal"><span class="pre">$ gh_nimrod_doc_pages -c .</span></tt> will tell you if your HTML file is correctly set up, explaining what markers have to be added to it. You need a pair of lines, everything inside will be handled by gh_nimrod_doc_pages.</li>
-<li>After a few attempts you should have your HTML file updated and a new documentation directory generated. Commit and push the changes.</li>
-</ol>
-
-<h2 id="updating-generated-docs-in-the-future">Updating generated docs in the future</h2><p>Once you have set up <tt class="docutils literal"><span class="pre">gh_nimrod_doc_pages</span></tt> updating documentation is very simple: you switch to your <tt class="docutils literal"><span class="pre">gh-pages</span></tt> branch, run <tt class="docutils literal"><span class="pre">gh_nimrod_doc_pages</span></tt>, review the changes and commit/push.</p>
-
-<h2 id="typical-gotchas">Typical gotchas</h2><ul class="simple"><li>The default generation behaviour is to process all the repository tags and ignore all branches. If you don't have tags, running the program with the default parameters won't do much. Modify the <tt class="docutils literal"><span class="pre">branches</span></tt> parameter in the <tt class="docutils literal"><span class="pre">gh_nimrod_doc_pages.ini</span></tt> file to make it work. Setting that to <tt class="docutils literal"><span class="pre">master</span></tt> usually does the trick, but it depends on how you use branches and for what.</li>
-<li>During the generation of documentation from <tt class="docutils literal"><span class="pre">.nim</span></tt> files in a project where there are many <tt class="docutils literal"><span class="pre">.nim</span></tt> files with specific nimrod configuration parameters, the <tt class="docutils literal"><span class="pre">doc2</span></tt> command is likely not seeing those because it doesn't change directory to those files. For the moment you have to disable use of <tt class="docutils literal"><span class="pre">doc2</span></tt> and use the <tt class="docutils literal"><span class="pre">doc</span></tt> command instead.</li>
-<li>In general the <tt class="docutils literal"><span class="pre">doc2</span></tt> program is unstable: three of the four source files of this program can't be rendered with <tt class="docutils literal"><span class="pre">doc2</span></tt> because it crashes. Please report these issues at <a class="reference external" href="https://github.com/Araq/Nimrod/issues">https://github.com/Araq/Nimrod/issues</a> and in the meantime force the program to use the <tt class="docutils literal"><span class="pre">doc</span></tt> command.</li>
-</ul>
+<h1 id="usage">Usage</h1><p>The installation and usage of the <tt class="docutils literal"><span class="pre">gh_nimrod_doc_pages</span></tt> binary is covered in the <a class="reference external" href="docs/gh_nimrod_doc_pages_usage.html">usage guide</a>. Documentation for all releases of this software in HTML format should be available online at <a class="reference external" href="http://gradha.github.io/gh_nimrod_doc_pages/">http://gradha.github.io/gh_nimrod_doc_pages/</a>.</p>
 
 <h1 id="git-branches">Git branches</h1><p>This project uses the <a class="reference external" href="https://github.com/nvie/gitflow">git-flow branching model</a> with reversed defaults. Stable releases are tracked in the <tt class="docutils literal"><span class="pre">stable</span></tt> branch. Development happens in the default <tt class="docutils literal"><span class="pre">master</span></tt> branch.</p>
 
-<h1 id="feedback">Feedback</h1><p>You can send me feedback through <a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues">github's issue tracker</a>. I also take a look from time to time to <a class="reference external" href="http://forum.nimrod-code.org">Nimrod's forums</a> where you can talk to other nimrod programmers. </p>
+<h1 id="feedback">Feedback</h1><p>You can send me feedback through <a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues">github's issue tracker</a>. I also take a look from time to time to <a class="reference external" href="http://forum.nim-lang.org">Nim's forums</a> where you can talk to other nimrod programmers. </p>
 
-
-
-<small>Generated: 2014-08-06 00:02:11 UTC</small>
+<small>Last modified: 2015-01-17 19:54 UTC. Local time: 2015-01-17 20:54.
+<div id="counter"></div>
+</small>
+<br>Rendered by lazy_rest 0.2.2.
 </div>
 </body>
+<script type="text/javascript">
+// Time difference code from http://stackoverflow.com/q/11479170/172690
+function timeDifference(current, previous) {
+    var msPerMinute = 60 * 1000;
+    var msPerHour = msPerMinute * 60;
+    var msPerDay = msPerHour * 24;
+    var msPerMonth = msPerDay * 30;
+    var msPerYear = msPerDay * 365;
+
+    var elapsed = current - previous;
+
+    if (elapsed < msPerMinute) {
+         return Math.round(elapsed/1000) + ' seconds ago';
+    } else if (elapsed < msPerHour) {
+         return Math.round(elapsed/msPerMinute) + ' minutes ago';
+    } else if (elapsed < msPerDay ) {
+         return Math.round(elapsed/msPerHour ) + ' hours ago';
+    } else if (elapsed < msPerMonth) {
+         return 'approximately ' + Math.round(elapsed/msPerDay) + ' days ago';
+    } else if (elapsed < msPerYear) {
+         return 'approximately ' + Math.round(elapsed/msPerMonth) + ' months ago';
+    } else {
+         return 'approximately ' + Math.round(elapsed/msPerYear ) + ' years ago';
+    }
+}
+
+// Timer base code taken from http://stackoverflow.com/a/11876480/172690
+window.onload = function() {
+    var fileTime = new Date(1421524444000);
+	var ctr = document.getElementById("counter");
+
+    function incrementCounter() {
+		var nowTime = new Date();
+		var relTime = timeDifference(nowTime, fileTime)
+		ctr.innerHTML = relTime;
+		// Update ourselves in the future, every five seconds.
+		setTimeout(incrementCounter, 5000);
+    }
+
+    incrementCounter();
+}
+</script>
+
 </html>

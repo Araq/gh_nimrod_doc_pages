@@ -5,8 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>What to do for a new public release of gh_nimrod_doc_pages?</title>
+<title>gh_nimrod_doc_pages release steps</title>
 <style type="text/css">
+
+body {
+  color: black;
+  background: white;
+}
 
 span.DecNumber {color: blue}
 span.BinNumber {color: blue}
@@ -20,7 +25,7 @@ span.LongStringLit {color: blue}
 span.CharLit {color: blue}
 span.EscapeSequence {color: black}
 span.Operator {color: black}
-span.Punctuation {color: black}
+span.Punctation {color: black}
 span.Comment, span.LongComment {font-style:italic; color: green}
 span.RegularExpression  {color: DarkViolet}
 span.TagStart {color: DarkViolet}
@@ -238,47 +243,92 @@ a.reference:hover {color: #E00000;background-color: #ffff00;display: margin;
 </head>
 <body>
 <div class="document" id="documentId">
-<h1 class="title">What to do for a new public release of gh_nimrod_doc_pages?</h1>
-<ul class="simple"><li>Create new milestone with version number (<tt class="docutils literal"><span class="pre">vXXX</span></tt>) at <a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/milestones">https://github.com/gradha/gh_nimrod_doc_pages/issues/milestones</a>.</li>
+<h1 class="title">gh_nimrod_doc_pages release steps</h1>
+<ul class="simple"><li>Create new milestone with version number (<tt class="docutils literal"><span class="pre">vXXX</span></tt>) at <a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/milestones">https://github.com/gradha/gh_nimrod_doc_pages/milestones</a>.</li>
 <li>Create new dummy issue <cite>Release versionname</cite> and assign to that milestone.</li>
 <li><tt class="docutils literal"><span class="pre">git flow release start versionname</span></tt> (versionname without v).</li>
 <li>Update version numbers:<ul class="simple"><li>Modify <a class="reference external" href="../README.html">README.rst</a>.</li>
 <li>Modify <a class="reference external" href="changes.html">docs/changes.rst</a> with list of changes and version/number.</li>
-<li>Modify <a class="reference external" href="../gh_nimrod_doc_pages.babel">gh_nimrod_doc_pages.babel</a>.</li>
+<li>Modify <a class="reference external" href="../gh_nimrod_doc_pages.nimble">gh_nimrod_doc_pages.nimble</a>.</li>
 <li>Modify <a class="reference external" href="../gh_nimrod_doc_pages.nim">gh_nimrod_doc_pages.nim</a>.</li>
 </ul>
 </li>
 <li><tt class="docutils literal"><span class="pre">git commit -av</span></tt> into the release branch the version number changes.</li>
 <li><tt class="docutils literal"><span class="pre">git flow release finish versionname</span></tt> (the tagname is versionname without <tt class="docutils literal"><span class="pre">v</span></tt>). When specifying the tag message, copy and paste a text version of the changes log into the message. Add rst item markers.</li>
 <li>Move closed issues to the release milestone.</li>
-<li><tt class="docutils literal"><span class="pre">git push origin master stable --tags</span></tt>.</li>
 <li>Build binaries for macosx/linux with nake <tt class="docutils literal"><span class="pre">dist</span></tt> command.</li>
+<li>Archive binaries.</li>
+<li><tt class="docutils literal"><span class="pre">git push origin master stable --tags</span></tt>.</li>
 <li>Attach the binaries to the appropriate release at <a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/releases">https://github.com/gradha/gh_nimrod_doc_pages/releases</a>.<ul class="simple"><li>Use nake <tt class="docutils literal"><span class="pre">md5</span></tt> task to generate md5 values, add them to the release.</li>
 <li>Follow the tag link of the release and create a hyper link to its changes log on (e.g. presumably gh-pages version?).</li>
-<li>Also add to the release text the Nimrod compiler version noted in the release issue.</li>
+<li>Also add to the release text the Nim compiler version noted in the release issue.</li>
 </ul>
 </li>
 <li>Increase version numbers, <tt class="docutils literal"><span class="pre">master</span></tt> branch gets +0.0.1:<ul class="simple"><li>Modify <a class="reference external" href="../README.html">README.rst</a>.</li>
 <li>Modify <a class="reference external" href="../gh_nimrod_doc_pages.nim">gh_nimrod_doc_pages.nim</a>.</li>
-<li>Modify <a class="reference external" href="../gh_nimrod_doc_pages.babel">gh_nimrod_doc_pages.babel</a>.</li>
+<li>Modify <a class="reference external" href="../gh_nimrod_doc_pages.nimble">gh_nimrod_doc_pages.nimble</a>.</li>
 <li>Add to <a class="reference external" href="changes.html">docs/changes.rst</a> development version with unknown date.</li>
 </ul>
 </li>
 <li><tt class="docutils literal"><span class="pre">git commit -av</span></tt> into <tt class="docutils literal"><span class="pre">master</span></tt> with <em>Bumps version numbers for development version. Refs #release issue</em>.</li>
-<li>Regenerate static website.<ul class="simple"><li><tt class="docutils literal"><span class="pre">git checkout gh-pages</span></tt> to switch to <tt class="docutils literal"><span class="pre">gh-pages</span></tt>.</li>
-<li><tt class="docutils literal"><span class="pre">rm `git ls-files -o` &amp;&amp; rm -Rf docs</span></tt> to purge files from other branches and force regeneration of all docs, even tags.</li>
-<li><tt class="docutils literal"><span class="pre">gh_nimrod_doc_pages -c . &amp;&amp; git add . &amp;&amp; git commit</span></tt>. Tag with <cite>Regenerates website. Refs #release_issue</cite>.</li>
+<li>Regenerate static website.<ul class="simple"><li>Make sure git doesn't show changes, then run <tt class="docutils literal"><span class="pre">nake web</span></tt> and review.</li>
+<li><tt class="docutils literal"><span class="pre">git add . &amp;&amp; git commit</span></tt>. Tag with <cite>Regenerates website. Refs #release_issue</cite>.</li>
+<li><tt class="docutils literal"><span class="pre">./nakefile postweb</span></tt> to return to the previous branch. This also updates submodules, so it is easier.</li>
 </ul>
 </li>
 <li><tt class="docutils literal"><span class="pre">git push origin master stable gh-pages --tags</span></tt>.</li>
 <li>Close the dummy release issue.</li>
-<li>Announce at <a class="reference external" href="http://forum.nimrod-lang.org/t/460">http://forum.nimrod-lang.org/t/460</a>.</li>
+<li>Announce at <a class="reference external" href="http://forum.nim-lang.org/t/460">http://forum.nim-lang.org/t/460</a>.</li>
 <li>Close the milestone on github.</li>
 </ul>
 
-
-
-<small>Generated: 2014-08-06 00:02:11 UTC</small>
+<small>Last modified: 2015-01-17 19:54 UTC. Local time: 2015-01-17 20:54.
+<div id="counter"></div>
+</small>
+<br>Rendered by lazy_rest 0.2.2.
 </div>
 </body>
+<script type="text/javascript">
+// Time difference code from http://stackoverflow.com/q/11479170/172690
+function timeDifference(current, previous) {
+    var msPerMinute = 60 * 1000;
+    var msPerHour = msPerMinute * 60;
+    var msPerDay = msPerHour * 24;
+    var msPerMonth = msPerDay * 30;
+    var msPerYear = msPerDay * 365;
+
+    var elapsed = current - previous;
+
+    if (elapsed < msPerMinute) {
+         return Math.round(elapsed/1000) + ' seconds ago';
+    } else if (elapsed < msPerHour) {
+         return Math.round(elapsed/msPerMinute) + ' minutes ago';
+    } else if (elapsed < msPerDay ) {
+         return Math.round(elapsed/msPerHour ) + ' hours ago';
+    } else if (elapsed < msPerMonth) {
+         return 'approximately ' + Math.round(elapsed/msPerDay) + ' days ago';
+    } else if (elapsed < msPerYear) {
+         return 'approximately ' + Math.round(elapsed/msPerMonth) + ' months ago';
+    } else {
+         return 'approximately ' + Math.round(elapsed/msPerYear ) + ' years ago';
+    }
+}
+
+// Timer base code taken from http://stackoverflow.com/a/11876480/172690
+window.onload = function() {
+    var fileTime = new Date(1421524444000);
+	var ctr = document.getElementById("counter");
+
+    function incrementCounter() {
+		var nowTime = new Date();
+		var relTime = timeDifference(nowTime, fileTime)
+		ctr.innerHTML = relTime;
+		// Update ourselves in the future, every five seconds.
+		setTimeout(incrementCounter, 5000);
+    }
+
+    incrementCounter();
+}
+</script>
+
 </html>

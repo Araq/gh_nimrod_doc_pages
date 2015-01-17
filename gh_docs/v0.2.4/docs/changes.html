@@ -5,8 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Badger bits license</title>
+<title>gh_nimrod_doc_pages changes log</title>
 <style type="text/css">
+
+body {
+  color: black;
+  background: white;
+}
 
 span.DecNumber {color: blue}
 span.BinNumber {color: blue}
@@ -20,7 +25,7 @@ span.LongStringLit {color: blue}
 span.CharLit {color: blue}
 span.EscapeSequence {color: black}
 span.Operator {color: black}
-span.Punctuation {color: black}
+span.Punctation {color: black}
 span.Comment, span.LongComment {font-style:italic; color: green}
 span.RegularExpression  {color: DarkViolet}
 span.TagStart {color: DarkViolet}
@@ -238,14 +243,92 @@ a.reference:hover {color: #E00000;background-color: #ffff00;display: margin;
 </head>
 <body>
 <div class="document" id="documentId">
-<h1 class="title">Badger bits license</h1>
-<p>The MIT License (MIT)<br />Copyright (c) 2014 Grzegorz Adam Hankiewicz<br /></p><p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &quot;Software&quot;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
-<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. </p>
+<h1 class="title">gh_nimrod_doc_pages changes log</h1>
+<p>Changes log for <a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/">gh_nimrod_doc_pages</a>.</p>
 
+<h1 id="v0-2-4-2015-01-17">v0.2.4 2015-01-17</h1><ul class="simple"><li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/26">Recognises .markdown extension too</a>.</li>
+<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/27">Fixed infinite loop post processing html links</a>.</li>
+<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/28">Support markdown generation with fenced blocks extension</a>.</li>
+<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/33">Replaced local patches with badger_bits</a>.</li>
+<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/32">Modified default directory for HTML files</a>. You can keep using the default <tt class="docutils literal"><span class="pre">docs</span></tt> directory for generated output, but since this may conflict with other same named directories in other branches it is a good idea to pick something unique for the <tt class="docutils literal"><span class="pre">gh-pages</span></tt> branch.</li>
+<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/37">Moved badger bits submodule to nimble package</a>.</li>
+<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/9">Uses lazy_rest submodule for faster HTML generation</a>. Some of the improvements this brings:</li>
+</ul>
+<blockquote><p><ul class="simple"><li>Code block line numbering.</li>
+<li>Check for infinite include recursion.</li>
+<li>Syntax highlight for more languages.</li>
+<li>No separate process spawning, so it should be faster.</li>
+</ul>
+</p></blockquote>
+<ul class="simple"><li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/38">Improved --version switch output</a>.</li>
+<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/7">Ignores nakefile.nim during default source scan</a>.</li>
+<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/36">Detects and favours nim compiler</a>.</li>
+<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/31">Changed doc to be the default, and doc2 to be optional</a>.</li>
+<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/39">Disabled processing of configuration files for module documentation</a>.</li>
+<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/16">Generates .idx files for markdown files</a>.</li>
+<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/40">Excludes temp directories from time machine backups under OSX</a>.</li>
+<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/6">Added binary distribution</a>.</li>
+<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/43">Fixed crash passing config.ini file directly instead of directory</a>.</li>
+<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/44">Fixed paths in theindex to subdirectory modules</a>.</li>
+</ul>
 
+<h1 id="v0-2-2-2014-06-18">v0.2.2 2014-06-18</h1><ul class="simple"><li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/5">Added markdown rendering support</a>.</li>
+<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/4">Added Babel stable installation</a>.</li>
+<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/17">Patched local .rst/.md links in generated HTML</a>.</li>
+<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/18">Fixed boot template title</a>.</li>
+<li><a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages/issues/19">Detects incorrect hyperlink case</a>.</li>
+</ul>
 
-<small>Generated: 2014-08-06 00:02:11 UTC</small>
+<h1 id="v0-2-0-2014-06-01">v0.2.0 2014-06-01</h1><ul class="simple"><li>Initial release.</li>
+</ul>
+
+<small>Last modified: 2015-01-17 19:54 UTC. Local time: 2015-01-17 20:54.
+<div id="counter"></div>
+</small>
+<br>Rendered by lazy_rest 0.2.2.
 </div>
 </body>
+<script type="text/javascript">
+// Time difference code from http://stackoverflow.com/q/11479170/172690
+function timeDifference(current, previous) {
+    var msPerMinute = 60 * 1000;
+    var msPerHour = msPerMinute * 60;
+    var msPerDay = msPerHour * 24;
+    var msPerMonth = msPerDay * 30;
+    var msPerYear = msPerDay * 365;
+
+    var elapsed = current - previous;
+
+    if (elapsed < msPerMinute) {
+         return Math.round(elapsed/1000) + ' seconds ago';
+    } else if (elapsed < msPerHour) {
+         return Math.round(elapsed/msPerMinute) + ' minutes ago';
+    } else if (elapsed < msPerDay ) {
+         return Math.round(elapsed/msPerHour ) + ' hours ago';
+    } else if (elapsed < msPerMonth) {
+         return 'approximately ' + Math.round(elapsed/msPerDay) + ' days ago';
+    } else if (elapsed < msPerYear) {
+         return 'approximately ' + Math.round(elapsed/msPerMonth) + ' months ago';
+    } else {
+         return 'approximately ' + Math.round(elapsed/msPerYear ) + ' years ago';
+    }
+}
+
+// Timer base code taken from http://stackoverflow.com/a/11876480/172690
+window.onload = function() {
+    var fileTime = new Date(1421524443000);
+	var ctr = document.getElementById("counter");
+
+    function incrementCounter() {
+		var nowTime = new Date();
+		var relTime = timeDifference(nowTime, fileTime)
+		ctr.innerHTML = relTime;
+		// Update ourselves in the future, every five seconds.
+		setTimeout(incrementCounter, 5000);
+    }
+
+    incrementCounter();
+}
+</script>
+
 </html>

@@ -8,6 +8,11 @@
 <title>Index</title>
 <style type="text/css">
 
+body {
+  color: black;
+  background: white;
+}
+
 span.DecNumber {color: blue}
 span.BinNumber {color: blue}
 span.HexNumber {color: blue}
@@ -20,7 +25,7 @@ span.LongStringLit {color: blue}
 span.CharLit {color: blue}
 span.EscapeSequence {color: black}
 span.Operator {color: black}
-span.Punctuation {color: black}
+span.Punctation {color: black}
 span.Comment, span.LongComment {font-style:italic; color: green}
 span.RegularExpression  {color: DarkViolet}
 span.TagStart {color: DarkViolet}
@@ -239,29 +244,97 @@ a.reference:hover {color: #E00000;background-color: #ffff00;display: margin;
 <body>
 <div class="document" id="documentId">
 <h1 class="title">Index</h1>
-Documents: <a href="external/badger_bits/license.html">Badger bits license</a>, <a href="external/badger_bits/README.html">Badger bits readme</a>, <a href="docs/changes.html">gh_nimrod_doc_pages changes log</a>, <a href="docs/release_steps.html">What to do for a new public release of gh_nimrod_doc_pages?</a>.<br><p /><h2>Documentation files</h2>
-<ul><li><a href="external/badger_bits/license.html">Badger bits license</a>
-<ul>
-</ul>
-</ul>
-<ul><li><a href="external/badger_bits/README.html">Badger bits readme</a>
-<ul>
-<li><a href="external/badger_bits/README.html#license">License</a>
-</ul>
-</ul>
+<p>Documents: <a href="docs/changes.html">gh_nimrod_doc_pages changes log</a>, <a href="license.html">gh_nimrod_doc_pages license</a>, <a href="docs/dist/gh_nimrod_doc_pages.html">gh_nimrod_doc_pages quick readme</a>, <a href="docs/release_steps.html">gh_nimrod_doc_pages release steps</a>, <a href="docs/gh_nimrod_doc_pages_usage.html">gh_nimrod_doc_pages usage guide</a>, <a href="vagrant_linux/readme.html">Vagrant VirtualBox machines</a>.<br><p /><h2>Documentation files</h2>
 <ul><li><a href="docs/changes.html">gh_nimrod_doc_pages changes log</a>
 <ul>
-<li><a href="docs/changes.html#v0-2-3">v0.2.3 ????-??-??</a>
+<li><a href="docs/changes.html#v0-2-5">v0.2.5 ????-??-??</a>
+<li><a href="docs/changes.html#v0-2-4-2015-01-17">v0.2.4 2015-01-17</a>
 <li><a href="docs/changes.html#v0-2-2-2014-06-18">v0.2.2 2014-06-18</a>
 <li><a href="docs/changes.html#v0-2-0-2014-06-01">v0.2.0 2014-06-01</a>
 </ul>
 </ul>
-<ul><li><a href="docs/release_steps.html">What to do for a new public release of gh_nimrod_doc_pages?</a>
+<ul><li><a href="license.html">gh_nimrod_doc_pages license</a>
 <ul>
 </ul>
 </ul>
+<ul><li><a href="docs/dist/gh_nimrod_doc_pages.html">gh_nimrod_doc_pages quick readme</a>
+<ul>
+<li><a href="docs/dist/gh_nimrod_doc_pages.html#license">License</a>
+</ul>
+</ul>
+<ul><li><a href="docs/release_steps.html">gh_nimrod_doc_pages release steps</a>
+<ul>
+</ul>
+</ul>
+<ul><li><a href="docs/gh_nimrod_doc_pages_usage.html">gh_nimrod_doc_pages usage guide</a>
+<ul>
+<li><a href="docs/gh_nimrod_doc_pages_usage.html#installation">Installation</a>
+<ul><li><a href="docs/gh_nimrod_doc_pages_usage.html#binaries">Binaries</a>
+<li><a href="docs/gh_nimrod_doc_pages_usage.html#source-code">Source code</a>
+<ul><li><a href="docs/gh_nimrod_doc_pages_usage.html#stable-version">Stable version</a>
+<li><a href="docs/gh_nimrod_doc_pages_usage.html#development-version">Development version</a>
+</ul></ul><li><a href="docs/gh_nimrod_doc_pages_usage.html#usage">Usage</a>
+<ul><li><a href="docs/gh_nimrod_doc_pages_usage.html#Z3rd-party-dependencies">3rd party dependencies</a>
+<li><a href="docs/gh_nimrod_doc_pages_usage.html#command-line-switches">Command line switches</a>
+<li><a href="docs/gh_nimrod_doc_pages_usage.html#setting-up-a-project-without-the-gh-pages-branch">Setting up a project without the gh-pages branch</a>
+<li><a href="docs/gh_nimrod_doc_pages_usage.html#setting-up-a-project-with-an-existing-gh-pages-branch">Setting up a project with an existing gh-pages branch</a>
+<li><a href="docs/gh_nimrod_doc_pages_usage.html#updating-generated-docs-in-the-future">Updating generated docs in the future</a>
+<li><a href="docs/gh_nimrod_doc_pages_usage.html#typical-gotchas">Typical gotchas</a>
+</ul></ul>
+</ul>
+<ul><li><a href="vagrant_linux/readme.html">Vagrant VirtualBox machines</a>
+<ul>
+</ul>
+</ul>
+</p>
 
-<small>Generated: 2014-08-06 00:02:11 UTC</small>
+<small>Last modified: 2015-01-17 19:54 UTC. Local time: 2015-01-17 20:54.
+<div id="counter"></div>
+</small>
+<br>Rendered by lazy_rest 0.2.2.
 </div>
 </body>
+<script type="text/javascript">
+// Time difference code from http://stackoverflow.com/q/11479170/172690
+function timeDifference(current, previous) {
+    var msPerMinute = 60 * 1000;
+    var msPerHour = msPerMinute * 60;
+    var msPerDay = msPerHour * 24;
+    var msPerMonth = msPerDay * 30;
+    var msPerYear = msPerDay * 365;
+
+    var elapsed = current - previous;
+
+    if (elapsed < msPerMinute) {
+         return Math.round(elapsed/1000) + ' seconds ago';
+    } else if (elapsed < msPerHour) {
+         return Math.round(elapsed/msPerMinute) + ' minutes ago';
+    } else if (elapsed < msPerDay ) {
+         return Math.round(elapsed/msPerHour ) + ' hours ago';
+    } else if (elapsed < msPerMonth) {
+         return 'approximately ' + Math.round(elapsed/msPerDay) + ' days ago';
+    } else if (elapsed < msPerYear) {
+         return 'approximately ' + Math.round(elapsed/msPerMonth) + ' months ago';
+    } else {
+         return 'approximately ' + Math.round(elapsed/msPerYear ) + ' years ago';
+    }
+}
+
+// Timer base code taken from http://stackoverflow.com/a/11876480/172690
+window.onload = function() {
+    var fileTime = new Date(1421524444000);
+	var ctr = document.getElementById("counter");
+
+    function incrementCounter() {
+		var nowTime = new Date();
+		var relTime = timeDifference(nowTime, fileTime)
+		ctr.innerHTML = relTime;
+		// Update ourselves in the future, every five seconds.
+		setTimeout(incrementCounter, 5000);
+    }
+
+    incrementCounter();
+}
+</script>
+
 </html>
