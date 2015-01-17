@@ -35,6 +35,12 @@ Precompiled binaries for some platforms are provided through `GitHub releases
 statically linked, so you can in theory put them anywhere on your system and
 have them work fine.
 
+The binary package provides the normal release binary and another version with
+the ``d`` suffix. This version is compiled in debug mode. If you experience a
+crash running the software you can run again the problematic command line with
+the debug binary and get a useful stack trace to attach to your bug report.
+
+
 Source code
 -----------
 
@@ -69,6 +75,17 @@ to install the latest development version::
 
 Usage
 =====
+
+3rd party dependencies
+----------------------
+
+For the correct usage of the program several binaries have to be found in your
+``$PATH``. For instance, to generate HTML documentation from Nim sources you
+need to have available the Nim compiler. Git support is provided by your OS
+binary of the Git tool.
+
+If you are missing any of these tools the program will refuse to run.
+
 
 Command line switches
 ---------------------
