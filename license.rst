@@ -2,8 +2,12 @@
 gh_nimrod_doc_pages license
 ===========================
 
+This is the license for `gh_nimrod_doc_pages
+<https://github.com/gradha/gh_nimrod_doc_pages>`_. See the `README
+<README.rst>`_.
+
 | The MIT License (MIT)
-| Copyright (c) 2014 Grzegorz Adam Hankiewicz
+| Copyright (c) 2015 Grzegorz Adam Hankiewicz
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
