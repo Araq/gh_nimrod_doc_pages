@@ -14,8 +14,6 @@ read this file and produce HTML files from all your ``.rst``, ``.md`` and
 Here is a small sample of websites using ``gh_nimrod_doc_pages`` and their
 ``gh-pages`` branch:
 
-* http://gradha.github.io/nimrod-ouroboros/ (`gh-pages
-  <https://github.com/gradha/nimrod-ouroboros/tree/gh-pages>`_).
 * http://gradha.github.io/seohtracker-logic/ (`gh-pages
   <https://github.com/gradha/seohtracker-logic/tree/gh-pages>`_).
 * https://github.com/MrJohz/appdirs (`gh-pages
