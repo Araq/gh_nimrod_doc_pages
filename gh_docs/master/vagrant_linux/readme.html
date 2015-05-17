@@ -244,7 +244,7 @@ a.reference:hover {color: #E00000;background-color: #ffff00;display: margin;
 <body>
 <div class="document" id="documentId">
 <h1 class="title">Vagrant VirtualBox machines</h1>
-<p>This directory contains specifications for <a class="reference external" href="https://www.vagrantup.com">Vagrant VirtualBox machines</a>. They are used both for testing and generation of binaries for Linux.</p>
+<p>This is a developer directory to <a class="reference external" href="https://www.vagrantup.com">Vagrant VirtualBox machines</a>. They are used both for testing and generation of binaries for Linux. Since it is <em>expensive</em> to have a full virtual machine for each program they are kept elsewhere and this directory only has symbolic links to them.</p>
 <p>To start up a machine go into the directory and type:<pre>
 $ vagrant up</pre>
 </p>
@@ -260,7 +260,7 @@ $ vagrant destroy</pre>
 </p>
 <p>Halting is good to stop consuming resources on your host. Destroying is good if you don't plan to use the virtual machine for some time, which frees disk space. </p>
 
-<small>Last modified: 2015-01-17 19:54 UTC. Local time: 2015-01-17 20:54.
+<small>Last modified: 2015-05-17 18:00 UTC. Local time: 2015-05-17 20:00.
 <div id="counter"></div>
 </small>
 <br>Rendered by lazy_rest 0.2.2.
@@ -294,7 +294,7 @@ function timeDifference(current, previous) {
 
 // Timer base code taken from http://stackoverflow.com/a/11876480/172690
 window.onload = function() {
-    var fileTime = new Date(1421524444000);
+    var fileTime = new Date(1431885611000);
 	var ctr = document.getElementById("counter");
 
     function incrementCounter() {

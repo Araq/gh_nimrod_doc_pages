@@ -246,8 +246,7 @@ a.reference:hover {color: #E00000;background-color: #ffff00;display: margin;
 <h1 class="title">gh_nimrod_doc_pages usage guide</h1>
 <p>This is the usage guide for the <tt class="docutils literal"><span class="pre">gh_nimrod_doc_pages</span></tt> tool of <a class="reference external" href="https://github.com/gradha/gh_nimrod_doc_pages">gh_nimrod_doc_pages</a>. This tool is a small helper for developers who want to generate and maintain a <a class="reference external" href="https://pages.github.com">GitHub Pages website</a> using the documentation of their <a class="reference external" href="http://nim-lang.org">Nim</a> source code. Once you create a small <tt class="docutils literal"><span class="pre">.ini</span></tt> configuration file with some parameters, <tt class="docutils literal"><span class="pre">gh_nimrod_doc_pages</span></tt> will read this file and produce HTML files from all your <tt class="docutils literal"><span class="pre">.rst</span></tt>, <tt class="docutils literal"><span class="pre">.md</span></tt> and <tt class="docutils literal"><span class="pre">.nim</span></tt> files for any tags and branches you want.</p>
 <p>Here is a small sample of websites using <tt class="docutils literal"><span class="pre">gh_nimrod_doc_pages</span></tt> and their <tt class="docutils literal"><span class="pre">gh-pages</span></tt> branch:</p>
-<ul class="simple"><li><a class="reference external" href="http://gradha.github.io/nimrod-ouroboros">http://gradha.github.io/nimrod-ouroboros</a>/ (<a class="reference external" href="https://github.com/gradha/nimrod-ouroboros/tree/gh-pages">gh-pages</a>).</li>
-<li><a class="reference external" href="http://gradha.github.io/seohtracker-logic">http://gradha.github.io/seohtracker-logic</a>/ (<a class="reference external" href="https://github.com/gradha/seohtracker-logic/tree/gh-pages">gh-pages</a>).</li>
+<ul class="simple"><li><a class="reference external" href="http://gradha.github.io/seohtracker-logic">http://gradha.github.io/seohtracker-logic</a>/ (<a class="reference external" href="https://github.com/gradha/seohtracker-logic/tree/gh-pages">gh-pages</a>).</li>
 <li><a class="reference external" href="https://github.com/MrJohz/appdirs">https://github.com/MrJohz/appdirs</a> (<a class="reference external" href="https://github.com/MrJohz/appdirs/tree/gh-pages">gh-pages</a>).</li>
 </ul>
 <p>More examples can be found linked from <a class="reference external" href="http://gradha.github.io">http://gradha.github.io</a>.</p>
@@ -314,7 +313,7 @@ $ nimble install -y gh_nimrod_doc_pages@#head</pre>
 <li>In general the <tt class="docutils literal"><span class="pre">doc2</span></tt> program is unstable: three of the four source files of this program can't be rendered with <tt class="docutils literal"><span class="pre">doc2</span></tt> because it crashes. Please report these issues at <a class="reference external" href="https://github.com/Araq/Nimrod/issues">https://github.com/Araq/Nimrod/issues</a>.</li>
 </ul>
 
-<small>Last modified: 2015-01-17 19:54 UTC. Local time: 2015-01-17 20:54.
+<small>Last modified: 2015-05-17 18:00 UTC. Local time: 2015-05-17 20:00.
 <div id="counter"></div>
 </small>
 <br>Rendered by lazy_rest 0.2.2.
@@ -348,7 +347,7 @@ function timeDifference(current, previous) {
 
 // Timer base code taken from http://stackoverflow.com/a/11876480/172690
 window.onload = function() {
-    var fileTime = new Date(1421524444000);
+    var fileTime = new Date(1431885611000);
 	var ctr = document.getElementById("counter");
 
     function incrementCounter() {
